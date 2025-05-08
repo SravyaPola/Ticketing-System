@@ -10,7 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-
 import java.util.List;
 
 @Entity
@@ -29,6 +28,12 @@ public class Employee {
 	private String department;
 	private String project;
 	private Long managerId;
+
+//	@OneToMany(mappedBy = "createdBy")
+//    private List<Ticket> createdTickets;
+//
+//    @OneToMany(mappedBy = "assignee")
+//    private List<Ticket> assignedTickets;
 
 	public Employee() {
 		super();

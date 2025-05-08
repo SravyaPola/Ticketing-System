@@ -1,7 +1,6 @@
 package com.synex.model;
 
 import java.util.List;
-import com.synex.domain.Role;
 
 public class RegisterDto {
 

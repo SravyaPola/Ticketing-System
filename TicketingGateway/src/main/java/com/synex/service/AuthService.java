@@ -16,4 +16,6 @@ public interface AuthService {
 	String login(LoginDto loginDto);
 
 	List<Role> getEmployeeRolesByName(String username);
+
+	String getEmail(String username);
 }

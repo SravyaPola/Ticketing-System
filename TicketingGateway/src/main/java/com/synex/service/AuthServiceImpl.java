@@ -71,4 +71,9 @@ public class AuthServiceImpl implements AuthService {
 		Employee employee = employeeRepository.findByName(username);
 		return employee.getRoles();
 	}
+
+	@Override
+	public String getEmail(String username) {
+		return employeeRepository.findByName(username).getEmail();
+	}
 }
