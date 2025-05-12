@@ -9,7 +9,7 @@
 <div class="container">
 	
 	<h2>Create New Ticket</h2>
-    <form action="${pageContext.request.contextPath}/submitTicket" method="post" enctype="multipart/form-data">
+    <form action="${pageContext.request.contextPath}/user/submit-ticket" method="post" enctype="multipart/form-data">
 		<c:if test="${not empty message}">
 		    <div class="message" style="text-align: center; font-weight: bold; color: green;">
 		        ${message}

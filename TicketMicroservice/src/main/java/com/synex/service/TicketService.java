@@ -2,6 +2,7 @@ package com.synex.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,4 +33,39 @@ public class TicketService {
 		ticket.setCreatedBy(json.get("employee").asText());
 		ticketRepository.save(ticket);
 	}
+
+	public List<Ticket> getAllTickets(String name) {
+		return ticketRepository.findByCreatedBy(name);
+	}
+
+	public Optional<Ticket> getOneTicket(String id) {
+		return ticketRepository.findById(Long.parseLong(id));
+	}
+
+	public void updateTicket(JsonNode json) {
+		Ticket ticket = ticketRepository.findById(json.get("id").asLong())
+				.orElseThrow(() -> new RuntimeException("Ticket not found"));
+		ticket.setPriority(Priority.valueOf(json.get("priority").asText().toUpperCase()));
+		ticket.setCategory(Category.valueOf(json.get("category").asText().toUpperCase()));
+		ticket.setDescription(json.get("description").asText());
+		if (json.has("attachments") && json.get("attachments").isArray()) {
+			List<String> newAttachments = new ArrayList<>();
+			json.get("attachments").forEach(node -> newAttachments.add(node.asText()));
+
+			List<String> existingAttachments = ticket.getFileAttachmentPath();
+			if (existingAttachments == null) {
+				existingAttachments = new ArrayList<>();
+			}
+
+			existingAttachments.addAll(newAttachments);
+			ticket.setFileAttachmentPath(existingAttachments);
+		}
+		ticketRepository.save(ticket);
+
+	}
+
+	public List<Ticket> getAllTicketsToApprove() {
+		return ticketRepository.findByStatus(Status.valueOf("OPEN"));
+	}
+	
 }

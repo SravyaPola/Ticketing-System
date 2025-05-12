@@ -13,7 +13,6 @@
         <div class="form-buttons" style="margin-top: 20px;">
             <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/create-ticket'">Create Ticket</button>
             <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/ticket-list'">View Tickets</button>
-            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/ticket-history'">Ticket History</button>
         </div>
 
         <form action="<c:url value='/logout-success' />" method="post" style="margin-top: 20px;">

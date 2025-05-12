@@ -1,18 +1,23 @@
 package com.synex.model;
 
+import java.util.Date;
 import java.util.List;
 
 public class TicketDto {
 
+	private Long id;
 	private String title;
 	private String description;
 	private String priority;
 	private String category;
+	private String status;
 	private List<String> fileAttachments;
 	private String employee;
 	private String assignee;
 	private String role;
 	private String email;
+	private Date creationDate;
+	private String createdBy;
 
 	public TicketDto() {
 		super();
@@ -25,6 +30,14 @@ public class TicketDto {
 		this.priority = priority;
 		this.category = category;
 		this.fileAttachments = fileAttachments;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getTitle() {
@@ -57,6 +70,14 @@ public class TicketDto {
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	public List<String> getFileAttachments() {
@@ -97,6 +118,22 @@ public class TicketDto {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
 	}
 
 }

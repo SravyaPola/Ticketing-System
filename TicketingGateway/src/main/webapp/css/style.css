@@ -102,4 +102,52 @@ input[type="file"] {
 .form-buttons button {
     width: 48%;
 }
+.ticket-actions {
+    padding: 4px;
+    text-align: center;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 6px;
+}
+
+.action-buttons button {
+    padding: 6px 10px;
+    font-size: 13px;
+    white-space: nowrap;
+    flex: 1 1 auto;
+    min-width: 80px;
+    max-width: 100px;
+}
+button.disabled-look {
+    background-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.button-group {
+    display: flex;
+    gap: 10px; /* space between buttons */
+    margin-top: 10px;
+}
+
+.button-group button {
+    flex: 1;
+    padding: 10px 20px;
+    background-color: #3478f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.button-group button:hover {
+    background-color: #255edb;
+}
+
+
+
 
