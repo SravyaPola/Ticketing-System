@@ -22,9 +22,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synex.component.MyClient;
 import com.synex.model.TicketDto;
+import com.synex.model.TicketHistoryDto;
 import com.synex.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 
@@ -96,9 +98,9 @@ public class UserController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		model.addAttribute("activeRole", session.getAttribute("activeRole"));
+		model.addAttribute("activeRole", "USER");
 		model.addAttribute("ticketList", ticketList);
-		return "ticket-list";
+		return "ticket-list";	
 	}
 
 	@GetMapping("/user/view-ticket/{id}")
@@ -111,8 +113,17 @@ public class UserController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		model.addAttribute("activeRole", session.getAttribute("activeRole"));
+		List<String> attachments = null;
+		try {
+			attachments = new ObjectMapper().readTree(jsonString).findValuesAsText("fileAttachmentPath");
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		System.out.println(attachments);
+		ticket.setFileAttachments(attachments);
+		model.addAttribute("activeRole", "USER");
 		model.addAttribute("ticket", ticket);
 		return "view-ticket";
 	}
@@ -130,6 +141,56 @@ public class UserController {
 		}
 		model.addAttribute("ticket", ticket);
 		return "update-ticket";
+	}
+
+	@PostMapping("/user/close-ticket/{id}")
+	public String closeTicket(@PathVariable String id, Model model, Principal principal) {
+		Map<String, Object> jsonMap = new HashMap<>();
+		jsonMap.put("status", "CLOSED");
+		jsonMap.put("id", id);
+		jsonMap.put("role", "USER");
+		jsonMap.put("employee", principal.getName());
+		model.addAttribute("activeRole", "USER");
+		String json = null;
+		try {
+			json = new ObjectMapper().writeValueAsString(jsonMap);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			model.addAttribute("message", "Failed to convert from String to Json");
+			return "view-ticket";
+		}
+		String result = client.sendToUpdateTicket(json);
+		if (result.equals("Success")) {
+			model.addAttribute("message", "Successfully Closed Ticket");
+		} else {
+			model.addAttribute("message", "Failed To Close Ticket");
+		}
+		return "view-ticket";
+	}
+
+	@PostMapping("/user/reopen-ticket/{id}")
+	public String reopenTicket(@PathVariable String id, Model model, Principal principal) {
+		Map<String, Object> jsonMap = new HashMap<>();
+		jsonMap.put("status", "REOPENED");
+		jsonMap.put("role", "USER");
+		jsonMap.put("id", id);
+		jsonMap.put("employee", principal.getName());
+		model.addAttribute("activeRole", "USER");
+		String json = null;
+		try {
+			json = new ObjectMapper().writeValueAsString(jsonMap);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			model.addAttribute("message", "Failed to convert from String to Json");
+			return "view-ticket";
+		}
+		String result = client.sendToUpdateTicket(json);
+		if (result.equals("Success")) {
+			model.addAttribute("message", "Successfully Reopened Ticket");
+		} else {
+			model.addAttribute("message", "Failed To Reopen Ticket");
+		}
+		return "view-ticket";
 	}
 
 	@PostMapping("/user/update-ticket/{id}")
@@ -163,6 +224,7 @@ public class UserController {
 		}
 
 		jsonMap.put("attachments", fileNames);
+		jsonMap.put("employee", principal.getName());
 		String json = null;
 		try {
 			json = new ObjectMapper().writeValueAsString(jsonMap);
@@ -181,7 +243,18 @@ public class UserController {
 	}
 
 	@GetMapping("/user/ticket-history/{id}")
-	public String showTicketHistory(@PathVariable String id, Model model) {
+	public String showTicketHistory(@PathVariable String id, Model model, Principal principal) {
+		String jsonString = client.sendToGetTicketHistory(id);
+		ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		List<TicketHistoryDto> ticketHistoryList = null;
+		try {
+			ticketHistoryList = mapper.readValue(jsonString, new TypeReference<List<TicketHistoryDto>>() {
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("activeRole", "USER");
+		model.addAttribute("ticketHistoryList", ticketHistoryList);
 		return "ticket-history";
 	}
 

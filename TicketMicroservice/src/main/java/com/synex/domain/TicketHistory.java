@@ -2,6 +2,9 @@ package com.synex.domain;
 
 import java.util.Date;
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,9 +28,10 @@ public class TicketHistory {
 	private Date actionDate;
 	private String comments;
 	private String actionBy;
-
+	private String role;
 	@ManyToOne
 	@JoinColumn(name = "ticket_id")
+	@JsonBackReference
 	private Ticket ticket;
 
 	public TicketHistory() {
@@ -58,6 +62,14 @@ public class TicketHistory {
 
 	public void setTicket(Ticket ticket) {
 		this.ticket = ticket;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public Action getAction() {

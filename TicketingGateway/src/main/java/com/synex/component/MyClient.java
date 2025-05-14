@@ -17,7 +17,9 @@ public class MyClient {
 	private static final String urlToGetListOfTickets = "http://localhost:8383/user/ticket-list";
 	private static final String urlToGetOneTicket = "http://localhost:8383/user/view-ticket";
 	private static final String urlToUpdateTicket = "http://localhost:8383/user/update-ticket";
-	private static final String urlToGetListOfAllTickets = "http://localhost:8383/manager/tickets-to-approve";
+	private static final String urlToGetListOfAllTicketsToApprove = "http://localhost:8383/manager/tickets-to-approve";
+	private static final String urlToGetListOfAllTicketsToResolve = "http://localhost:8383/admin/tickets-to-resolve";
+	private static final String urlToGetTicketHistory = "http://localhost:8383/ticket-history";
 
 	public String sendToCreateTicket(TicketDto ticketDto) {
 		HttpHeaders headers = new HttpHeaders();
@@ -37,16 +39,19 @@ public class MyClient {
 
 	public String sendToGetListOfTickets(String name) {
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
 		RestTemplate restTemplate = new RestTemplate();
 		HttpEntity<String> requestEntity = new HttpEntity<>(name, headers);
 		ResponseEntity<String> responseEntity = restTemplate.postForEntity(urlToGetListOfTickets, requestEntity,
 				String.class);
 		String response = responseEntity.getBody();
 		return response;
+	    
 	}
 
 	public String sendToGetOneTicket(String id) {
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.TEXT_PLAIN);
 		RestTemplate restTemplate = new RestTemplate();
 		HttpEntity<String> requestEntity = new HttpEntity<>(id, headers);
 		ResponseEntity<String> responseEntity = restTemplate.postForEntity(urlToGetOneTicket, requestEntity,
@@ -76,7 +81,27 @@ public class MyClient {
 		HttpHeaders headers = new HttpHeaders();
 		RestTemplate restTemplate = new RestTemplate();
 		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-		ResponseEntity<String> responseEntity = restTemplate.postForEntity(urlToGetListOfAllTickets, requestEntity,
+		ResponseEntity<String> responseEntity = restTemplate.postForEntity(urlToGetListOfAllTicketsToApprove, requestEntity,
+				String.class);
+		String response = responseEntity.getBody();
+		return response;
+	}
+
+	public String sendToGetTicketHistory(String id) {
+		HttpHeaders headers = new HttpHeaders();
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<String> requestEntity = new HttpEntity<>(id, headers);
+		ResponseEntity<String> responseEntity = restTemplate.postForEntity(urlToGetTicketHistory, requestEntity,
+				String.class);
+		String response = responseEntity.getBody();
+		return response;
+	}
+
+	public String sendToGetListOfAllTicketsToResolve() {
+		HttpHeaders headers = new HttpHeaders();
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> responseEntity = restTemplate.postForEntity(urlToGetListOfAllTicketsToResolve, requestEntity,
 				String.class);
 		String response = responseEntity.getBody();
 		return response;

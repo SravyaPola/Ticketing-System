@@ -46,7 +46,15 @@ public class SecurityConfig {
         .permitAll();
 		
 		return http.build();
-	}	
+	}
+//	@Bean 
+//	public SecurityFilterChain apiFilterChain2(HttpSecurity http) throws Exception {
+//	http
+//    .csrf().disable()
+//    .authorizeRequests()
+//    .anyRequest().permitAll();
+//	return http.build();
+//	}
 
 	@Bean
 	AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

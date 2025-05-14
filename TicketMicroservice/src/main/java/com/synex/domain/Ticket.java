@@ -1,8 +1,12 @@
 package com.synex.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -39,11 +43,12 @@ public class Ticket {
 	@ElementCollection
     @CollectionTable(name = "ticket_attachments", joinColumns = @JoinColumn(name = "ticket_id"))
     @Column(name = "file_path")
-	private List<String> fileAttachmentPath;
+	private List<String> fileAttachmentPath = new ArrayList<>();;
 	private String createdBy;
 	private String assignee;
 
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+	@JsonManagedReference
 	private List<TicketHistory> history;
 
 	public Ticket() {

@@ -9,6 +9,9 @@
 		<c:if test="${activeRole == 'USER'}">
 		    <title>Your Tickets</title>
 		</c:if>
+		<c:if test="${activeRole == 'ADMIN'}">
+			<title>Tickets to Resolve</title>
+		</c:if>
 	</head>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
@@ -19,6 +22,9 @@
 	<c:if test="${activeRole == 'USER'}">
 	    <h2>Your Tickets</h2>
 	</c:if>
+	<c:if test="${activeRole == 'ADMIN'}">
+		<h2>Tickets to Resolve</h2>
+    </c:if>
 
 	<table border="1" width="100%" cellpadding="8">
 	    <thead>
@@ -47,6 +53,9 @@
 						<c:if test="${activeRole == 'MANAGER'}">
 						    <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/manager/view-ticket/${ticket.id}'">View</button>
 						</c:if>
+						<c:if test="${activeRole == 'ADMIN'}">
+							<button type="button" onclick="window.location.href='${pageContext.request.contextPath}/admin/view-ticket/${ticket.id}'">View</button>
+						</c:if>
 						<c:if test="${activeRole == 'USER'}">
 						    <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/update-ticket/${ticket.id}'">Update</button>
 						</c:if>
@@ -55,6 +64,9 @@
 						</c:if>
 						<c:if test="${activeRole == 'MANAGER'}">
 						    <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/manager/ticket-history/${ticket.id}'">History</button>
+						</c:if>
+						<c:if test="${activeRole == 'ADMIN'}">
+							<button type="button" onclick="window.location.href='${pageContext.request.contextPath}/admin/ticket-history/${ticket.id}'">History</button>
 						</c:if>
 	                </div>
 	            </td>

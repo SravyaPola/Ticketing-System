@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,7 +22,7 @@ import com.synex.model.TicketHistoryDto;
 import com.synex.service.AuthService;
 
 @Controller
-public class ManagerController {
+public class AdminController {
 
 	@Autowired
 	MyClient client;
@@ -32,9 +31,9 @@ public class ManagerController {
 	private AuthService authService;
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	@GetMapping("/manager/tickets-to-approve")
-	public String showListOfTicketsToManager(Model model) {
-		String jsonString = client.sendToGetListOfAllTicketsToApprove();
+	@GetMapping("/admin/tickets-to-resolve")
+	public String showListOfTicketsToAdmin(Model model) {
+		String jsonString = client.sendToGetListOfAllTicketsToResolve();
 		ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		List<TicketDto> ticketList = null;
 		try {
@@ -43,13 +42,13 @@ public class ManagerController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		model.addAttribute("activeRole", "MANAGER");
+		model.addAttribute("activeRole", "ADMIN");
 		model.addAttribute("ticketList", ticketList);
 		return "ticket-list";
 	}
 
-	@GetMapping("/manager/view-ticket/{id}")
-	public String viewTicketToManager(@PathVariable String id, Model model) {
+	@GetMapping("/admin/view-ticket/{id}")
+	public String viewTicketToAdmin(@PathVariable String id, Model model) {
 		String jsonString = client.sendToGetOneTicket(id);
 		ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		TicketDto ticket = null;
@@ -59,19 +58,19 @@ public class ManagerController {
 			e.printStackTrace();
 		}
 		model.addAttribute("files", ticket.getFileAttachments());
-		model.addAttribute("activeRole", "MANAGER");
+		model.addAttribute("activeRole", "ADMIN");
 		model.addAttribute("ticket", ticket);
 		return "view-ticket";
 	}
 
-	@PostMapping("/manager/approve-ticket/{id}")
+	@PostMapping("/admin/resolve-ticket/{id}")
     public String approveTicket(@PathVariable String id, Model model, TicketDto ticketDto, Principal principal) {
 		Map<String, Object> jsonMap = new HashMap<>();
-		jsonMap.put("status", "APPROVED");
+		jsonMap.put("status", "RESOLVED");
 		jsonMap.put("id", ticketDto.getId());
-		jsonMap.put("role", "MANAGER");
+		jsonMap.put("role", "ADMIN");
 		jsonMap.put("employee", principal.getName());
-		model.addAttribute("activeRole", "MANAGER");
+		model.addAttribute("activeRole", "ADMIN");
 		String json = null;
 		try {
 			json = new ObjectMapper().writeValueAsString(jsonMap);
@@ -83,21 +82,21 @@ public class ManagerController {
 		System.out.println(json);
         String result = client.sendToUpdateTicket(json);
         if(result.equals("Success")) {
-			model.addAttribute("message", "Successfully Approved Ticket");
+			model.addAttribute("message", "Successfully Resolved Ticket");
 		} else {
-			model.addAttribute("message", "Failed To Approve Ticket");
+			model.addAttribute("message", "Failed To Resolve Ticket");
 		}
         return "view-ticket";
     }
 
-    @PostMapping("/manager/reject-ticket/{id}")
-    public String rejectTicket(@PathVariable String id, @RequestParam("reason") String reason,TicketDto ticketDto, Model model, Principal principal) {
+    @PostMapping("/admin/assign-ticket/{id}")
+    public String rejectTicket(@PathVariable String id,TicketDto ticketDto, Model model, Principal principal) {
     	Map<String, Object> jsonMap = new HashMap<>();
-    	jsonMap.put("status", "REJECTED");
+    	jsonMap.put("status", "ASSIGNED");
 		jsonMap.put("id", ticketDto.getId());
-		jsonMap.put("role", "MANAGER");
+		jsonMap.put("role", "ADMIN");
 		jsonMap.put("employee", principal.getName());
-		model.addAttribute("activeRole", "MANAGER");
+		model.addAttribute("activeRole", "ADMIN");
 		String json = null;
 		try {
 			json = new ObjectMapper().writeValueAsString(jsonMap);
@@ -108,14 +107,14 @@ public class ManagerController {
 		}
         String result = client.sendToUpdateTicket(json);
         if(result.equals("Success")) {
-			model.addAttribute("message", "Successfully Rejected Ticket");
+			model.addAttribute("message", "Successfully Assigned Ticket");
 		} else {
-			model.addAttribute("message", "Failed To Reject Ticket");
+			model.addAttribute("message", "Failed To Assign Ticket");
 		}
         return "view-ticket";
     }
     
-    @GetMapping("/manager/ticket-history/{id}")
+    @GetMapping("/admin/ticket-history/{id}")
 	public String showTicketHistory(@PathVariable String id, Model model, Principal principal) {
 		String jsonString = client.sendToGetTicketHistory(id);
 		ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -126,7 +125,7 @@ public class ManagerController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		model.addAttribute("activeRole", "MANAGER");
+		model.addAttribute("activeRole", "ADMIN");
 		model.addAttribute("ticketHistoryList", ticketHistoryList);
 		return "ticket-history";
 	}
