@@ -27,17 +27,23 @@
 
    <p><strong>Description:</strong><br/>
    <blockquote>${ticket.description}</blockquote></p>
-   <p><strong>Attachments to Download:</strong>
-	<c:forEach var="filePath" items="${ticket.fileAttachments}">
-	    <c:set var="segments" value="${fn:split(filePath, '/')}"/>
-	    <c:set var="filename" value="${segments[fn:length(segments) - 1]}"/>
-		<p>Files = ${ticket.fileAttachments}</p>
-	    <li>
-	        <a href="${pageContext.request.contextPath}/download?path=${filePath}">
-	            <c:out value="${filename}" />
-	        </a>
-	    </li>
-	</c:forEach>
+	<c:if test="${not empty ticket.fileAttachments}">
+	    <strong>Attachments to Download:</strong>
+	    <ul>
+	        <c:forEach var="filePath" items="${ticket.fileAttachments}">
+	            <c:if test="${not empty filePath}">
+	                <c:set var="segments" value="${fn:split(filePath, '/')}"/>
+	                <c:set var="filename" value="${segments[fn:length(segments) - 1]}"/>
+	                <li>
+	                    <a href="${pageContext.request.contextPath}/download?path=${filePath}" download>
+	                        <c:out value="${filename}" />
+	                    </a>
+	                </li>
+	            </c:if>
+	        </c:forEach>
+	    </ul>
+	</c:if>
+
 
 	</ul>
    <hr/>
@@ -79,11 +85,17 @@
    </c:if>
 
    <c:if test="${activeRole == 'ADMIN'}">
-      <div class="button-group">
-         <button type="button">Resolve</button>
-         <button type="button">Open</button>
-         <button type="button">Close</button>
-      </div>
+	<div class="inline-button-group" id="actionButtons">
+		<form id="resolveForm" method="post" action="${pageContext.request.contextPath}/admin/resolve-ticket/${ticket.id}">
+				<button type="submit" class="action-button">Resolve</button>
+		</form>
+		<form id="closeForm" method="post" action="${pageContext.request.contextPath}/admin/close-ticket/${ticket.id}">
+				<button type="submit" class="action-button">Close</button>
+		</form>
+		<form id="reopenForm" method="post" action="${pageContext.request.contextPath}/admin/reopen-ticket/${ticket.id}">
+				<button type="submit" class="action-button">ReOpen</button>
+		</form>
+	</div>
    </c:if>
 
 </div>

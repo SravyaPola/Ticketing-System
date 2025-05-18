@@ -23,10 +23,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synex.component.MyClient;
+import com.synex.domain.Employee;
 import com.synex.model.TicketDto;
 import com.synex.model.TicketHistoryDto;
+import com.synex.repository.EmployeeRepository;
 import com.synex.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 
@@ -41,6 +44,9 @@ public class UserController {
 
 	@Autowired
 	private AuthService authService;
+
+	@Autowired
+	private EmployeeRepository employeeRepository;
 
 	@GetMapping("/user/create-ticket")
 	public String showCreateTicketPage(Model model) {
@@ -75,6 +81,8 @@ public class UserController {
 		}
 
 		ticketDto.setFileAttachments(savedPaths);
+		Employee employee = employeeRepository.findByName(principal.getName());
+		ticketDto.setManagerId(employee.getManagerId());
 		String message = client.sendToCreateTicket(ticketDto);
 		if (!message.equals("Failed")) {
 			model.addAttribute("message", "Token Successfully Created");
@@ -100,7 +108,7 @@ public class UserController {
 		}
 		model.addAttribute("activeRole", "USER");
 		model.addAttribute("ticketList", ticketList);
-		return "ticket-list";	
+		return "ticket-list";
 	}
 
 	@GetMapping("/user/view-ticket/{id}")
@@ -113,15 +121,22 @@ public class UserController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		List<String> attachments = null;
+		ObjectMapper mapperToAttachments = new ObjectMapper();
+		JsonNode rootNode = null;
 		try {
-			attachments = new ObjectMapper().readTree(jsonString).findValuesAsText("fileAttachmentPath");
+			rootNode = mapperToAttachments.readTree(jsonString);
 		} catch (JsonMappingException e) {
 			e.printStackTrace();
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
-		System.out.println(attachments);
+		List<String> attachments = new ArrayList<>();
+		JsonNode attachmentNode = rootNode.get("fileAttachmentPath");
+		if (attachmentNode != null && attachmentNode.isArray()) {
+			for (JsonNode node : attachmentNode) {
+				attachments.add(node.asText());
+			}
+		}
 		ticket.setFileAttachments(attachments);
 		model.addAttribute("activeRole", "USER");
 		model.addAttribute("ticket", ticket);
@@ -159,7 +174,7 @@ public class UserController {
 			model.addAttribute("message", "Failed to convert from String to Json");
 			return "view-ticket";
 		}
-		String result = client.sendToUpdateTicket(json);
+		String result = client.sendToUpdateTicketByUser(json);
 		if (result.equals("Success")) {
 			model.addAttribute("message", "Successfully Closed Ticket");
 		} else {
@@ -184,7 +199,7 @@ public class UserController {
 			model.addAttribute("message", "Failed to convert from String to Json");
 			return "view-ticket";
 		}
-		String result = client.sendToUpdateTicket(json);
+		String result = client.sendToUpdateTicketByUser(json);
 		if (result.equals("Success")) {
 			model.addAttribute("message", "Successfully Reopened Ticket");
 		} else {
@@ -233,7 +248,7 @@ public class UserController {
 			model.addAttribute("message", "Failed to convert from String to Json");
 			return "update-ticket";
 		}
-		String response = client.sendToUpdateTicket(json);
+		String response = client.sendToUpdateTicketByUser(json);
 		if (response.equals("Success")) {
 			model.addAttribute("message", "Successfully Updated Ticket");
 		} else {

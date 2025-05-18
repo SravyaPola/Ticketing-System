@@ -33,7 +33,6 @@ public class AuthServiceImpl implements AuthService {
 		} else if (employeeRepository.existsByEmail(registerDto.getEmail())) {
 			return "Email is already exists!.";
 		} else {
-
 			Employee employee = new Employee();
 			employee.setName(registerDto.getName());
 			employee.setEmail(registerDto.getEmail());
@@ -50,7 +49,6 @@ public class AuthServiceImpl implements AuthService {
 			employee.setProject(registerDto.getProject());
 			employee.setManagerId(registerDto.getManagerId());
 			employeeRepository.save(employee);
-
 			return "success";
 		}
 	}
@@ -60,9 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
-
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-
 		return "Login Successful";
 	}
 

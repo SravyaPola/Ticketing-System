@@ -11,7 +11,6 @@ import com.synex.model.LoginDto;
 import com.synex.model.RegisterDto;
 import com.synex.model.RoleForm;
 import com.synex.service.AuthService;
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller

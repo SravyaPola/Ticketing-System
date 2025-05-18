@@ -11,5 +11,8 @@ import com.synex.domain.Ticket;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	List<Ticket> findByCreatedBy(String name);
-	List<Ticket> findByStatus(Status status);
+
+	List<Ticket> findByStatusAndAssignee(Status status, String name);
+
+	List<Ticket> findByManagerId(Long id);
 }

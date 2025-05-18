@@ -41,11 +41,12 @@ public class Ticket {
 	@Enumerated(EnumType.STRING)
 	private Category category;
 	@ElementCollection
-    @CollectionTable(name = "ticket_attachments", joinColumns = @JoinColumn(name = "ticket_id"))
-    @Column(name = "file_path")
+	@CollectionTable(name = "ticket_attachments", joinColumns = @JoinColumn(name = "ticket_id"))
+	@Column(name = "file_path")
 	private List<String> fileAttachmentPath = new ArrayList<>();;
 	private String createdBy;
 	private String assignee;
+	private Long managerId;
 
 	@OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
 	@JsonManagedReference
@@ -57,7 +58,7 @@ public class Ticket {
 
 	public Ticket(Long id, String title, String description, Priority priority, Status status, Date creationDate,
 			Category category, List<String> fileAttachmentPath, String createdBy, String assignee,
-			List<TicketHistory> history) {
+			List<TicketHistory> history, Long managerId) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -70,6 +71,7 @@ public class Ticket {
 		this.createdBy = createdBy;
 		this.assignee = assignee;
 		this.history = history;
+		this.managerId = managerId;
 	}
 
 	public Long getId() {
@@ -158,6 +160,14 @@ public class Ticket {
 
 	public void setHistory(List<TicketHistory> history) {
 		this.history = history;
+	}
+
+	public Long getManagerId() {
+		return managerId;
+	}
+
+	public void setManagerId(Long managerId) {
+		this.managerId = managerId;
 	}
 
 }

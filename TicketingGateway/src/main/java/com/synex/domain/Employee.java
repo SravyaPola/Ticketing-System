@@ -29,12 +29,6 @@ public class Employee {
 	private String project;
 	private Long managerId;
 
-//	@OneToMany(mappedBy = "createdBy")
-//    private List<Ticket> createdTickets;
-//
-//    @OneToMany(mappedBy = "assignee")
-//    private List<Ticket> assignedTickets;
-
 	public Employee() {
 		super();
 	}

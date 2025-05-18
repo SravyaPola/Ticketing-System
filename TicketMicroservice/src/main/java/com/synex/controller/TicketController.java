@@ -25,17 +25,18 @@ public class TicketController {
 		ticketService.saveTicket(json);
 		return ResponseEntity.ok("Successfully Token was created");
 	}
+
 	@PostMapping("/user/ticket-list")
 	public ResponseEntity<String> getAllTickets(@RequestBody String name) {
-	    List<Ticket> allTickets = ticketService.getAllTickets(name);
-	    try {
-	        ObjectMapper objectMapper = new ObjectMapper();
-	        String json = objectMapper.writeValueAsString(allTickets); 
-	        return ResponseEntity.ok(json);
-	    } catch (Exception e) { 
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body("Error serializing ticket list: " + e.getMessage());
-	    }
+		List<Ticket> allTickets = ticketService.getAllTickets(name);
+		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			String json = objectMapper.writeValueAsString(allTickets);
+			return ResponseEntity.ok(json);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error serializing ticket list: " + e.getMessage());
+		}
 	}
 
 	@PostMapping("/user/view-ticket")
@@ -49,16 +50,33 @@ public class TicketController {
 			return ResponseEntity.noContent().build();
 		}
 	}
-	
+
 	@PostMapping("/user/update-ticket")
-	public ResponseEntity<String> updateTicket(@RequestBody JsonNode json) {
-		ticketService.updateTicket(json);
-		return ResponseEntity.ok("Successfully Token was Updated");
+	public ResponseEntity<String> updateTicketByUser(@RequestBody JsonNode json) {
+		ticketService.updateUserTicket(json);
+		if (json.has("status")) {
+			ticketService.updateTicketHistory(json);
+		}
+		return ResponseEntity.ok("Successfully Ticket was Updated");
 	}
-	
+
+	@PostMapping("/manager/update-ticket")
+	public ResponseEntity<String> updateTicketByManager(@RequestBody JsonNode json) {
+		ticketService.updateUserTicket(json);
+		ticketService.updateTicketHistory(json);
+		return ResponseEntity.ok("Successfully Ticket was Updated");
+	}
+
+	@PostMapping("/admin/update-ticket")
+	public ResponseEntity<String> updateTicketByAdmin(@RequestBody JsonNode json) {
+		ticketService.updateUserTicket(json);
+		ticketService.updateTicketHistory(json);
+		return ResponseEntity.ok("Successfully Ticket was Updated");
+	}
+
 	@PostMapping("/manager/tickets-to-approve")
-	public ResponseEntity<String> getAllTicketsToApprove() {
-		List<Ticket> allTickets = ticketService.getAllTicketsToApprove();
+	public ResponseEntity<String> getAllTicketsToApprove(@RequestBody String id) {
+		List<Ticket> allTickets = ticketService.getAllTicketsToApprove(id);
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			String json = objectMapper.writeValueAsString(allTickets);
@@ -67,9 +85,10 @@ public class TicketController {
 			return ResponseEntity.noContent().build();
 		}
 	}
+
 	@PostMapping("/admin/tickets-to-resolve")
-	public ResponseEntity<String> getAllTicketsToResolve() {
-		List<Ticket> allTickets = ticketService.getAllTicketsToResolve();
+	public ResponseEntity<String> getAllTicketsToResolve(@RequestBody String name) {
+		List<Ticket> allTickets = ticketService.getAllTicketsToResolve(name);
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			String json = objectMapper.writeValueAsString(allTickets);
@@ -78,7 +97,7 @@ public class TicketController {
 			return ResponseEntity.noContent().build();
 		}
 	}
-	
+
 	@PostMapping("/ticket-history")
 	public ResponseEntity<String> getTicketHistory(@RequestBody String id) {
 		List<TicketHistory> allTickets = ticketService.getTicketHistory(Long.parseLong(id));
@@ -89,6 +108,13 @@ public class TicketController {
 		} catch (Exception e) {
 			return ResponseEntity.noContent().build();
 		}
+	}
+	
+	@PostMapping("/manager/assign-ticket")
+	public ResponseEntity<String> updateTicketByManagerToAssign(@RequestBody JsonNode json) {
+		ticketService.updateUserTicket(json);
+		ticketService.updateTicketHistory(json);
+		return ResponseEntity.ok("Successfully Ticket was Updated");
 	}
 
 }

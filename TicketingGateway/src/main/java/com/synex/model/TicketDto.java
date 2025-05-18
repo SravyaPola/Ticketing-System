@@ -17,6 +17,7 @@ public class TicketDto {
 	private List<String> fileAttachments;
 	private String employee;
 	private String assignee;
+	private Long managerId;
 	private String role;
 	private String email;
 	private Date creationDate;
@@ -26,13 +27,24 @@ public class TicketDto {
 		super();
 	}
 
-	public TicketDto(String title, String description, String priority, String category, List<String> fileAttachments) {
+	public TicketDto(Long id, String title, String description, String priority, String category, String status,
+			List<String> fileAttachments, String employee, String assignee, Long managerId, String role, String email,
+			Date creationDate, String createdBy) {
 		super();
+		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.priority = priority;
 		this.category = category;
+		this.status = status;
 		this.fileAttachments = fileAttachments;
+		this.employee = employee;
+		this.assignee = assignee;
+		this.managerId = managerId;
+		this.role = role;
+		this.email = email;
+		this.creationDate = creationDate;
+		this.createdBy = createdBy;
 	}
 
 	public Long getId() {
@@ -137,6 +149,14 @@ public class TicketDto {
 
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
+	}
+
+	public Long getManagerId() {
+		return managerId;
+	}
+
+	public void setManagerId(Long managerId) {
+		this.managerId = managerId;
 	}
 
 }

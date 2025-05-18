@@ -20,7 +20,7 @@ public class TicketService {
 
 	@Autowired
 	TicketRepository ticketRepository;
-	
+
 	@Autowired
 	TicketHistoryRepository historyRepository;
 
@@ -37,6 +37,7 @@ public class TicketService {
 		}
 		ticket.setStatus(Status.OPEN);
 		ticket.setCreatedBy(json.get("employee").asText());
+		ticket.setManagerId(json.get("managerId").asLong());
 		ticketRepository.save(ticket);
 		TicketHistory history = new TicketHistory();
 		history.setTicket(ticket);
@@ -44,81 +45,101 @@ public class TicketService {
 		history.setActionBy(json.get("employee").asText());
 		history.setComments("created ticket by user");
 		historyRepository.save(history);
-		
+
 	}
 
 	public List<Ticket> getAllTickets(String name) {
 		List<Ticket> tickets = ticketRepository.findByCreatedBy(name);
-	    return (tickets != null) ? tickets : new ArrayList<>();
+		return (tickets != null) ? tickets : new ArrayList<>();
 	}
 
 	public Optional<Ticket> getOneTicket(String id) {
 		return ticketRepository.findById(Long.parseLong(id));
 	}
 
-	public void updateTicket(JsonNode json) {
-	    Ticket ticket = ticketRepository.findById(json.get("id").asLong())
-	            .orElseThrow(() -> new RuntimeException("Ticket not found"));
+	public void updateUserTicket(JsonNode json) {
+		Ticket ticket = ticketRepository.findById(json.get("id").asLong())
+				.orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-	    if (json.hasNonNull("priority")) {
-	        ticket.setPriority(Priority.valueOf(json.get("priority").asText().toUpperCase()));
-	    }
-	    if (json.hasNonNull("category")) {
-	        ticket.setCategory(Category.valueOf(json.get("category").asText().toUpperCase()));
-	    }
-	    if (json.hasNonNull("description")) {
-	        ticket.setDescription(json.get("description").asText());
-	    }
-	    if (json.hasNonNull("status")) {
-	    	ticket.setStatus(Status.valueOf(json.get("status").asText().toUpperCase()));
-	    }
-	    if (json.has("attachments") && json.get("attachments").isArray()) {
-	        List<String> newAttachments = new ArrayList<>();
-	        json.get("attachments").forEach(node -> {
-	            if (node != null && !node.isNull()) {
-	                newAttachments.add(node.asText());
-	            }
-	        });
-	        List<String> existingAttachments = ticket.getFileAttachmentPath();
-	        if (existingAttachments == null) {
-	            existingAttachments = new ArrayList<>();
-	        }
-	        existingAttachments.addAll(newAttachments);
-	        ticket.setFileAttachmentPath(existingAttachments);
-	    }
-	    ticketRepository.save(ticket);
-	    TicketHistory history = new TicketHistory();
+		if (json.hasNonNull("priority")) {
+			ticket.setPriority(Priority.valueOf(json.get("priority").asText().toUpperCase()));
+		}
+		if (json.hasNonNull("category")) {
+			ticket.setCategory(Category.valueOf(json.get("category").asText().toUpperCase()));
+		}
+		if (json.hasNonNull("description")) {
+			ticket.setDescription(json.get("description").asText());
+		}
+		if (json.hasNonNull("status")) {
+			ticket.setStatus(Status.valueOf(json.get("status").asText().toUpperCase()));
+		}
+		if (json.hasNonNull("assignee")) {
+			ticket.setAssignee(json.get("assignee").asText());
+		}
+		if (json.has("attachments") && json.get("attachments").isArray()) {
+			List<String> newAttachments = new ArrayList<>();
+			json.get("attachments").forEach(node -> {
+				if (node != null && !node.isNull()) {
+					newAttachments.add(node.asText());
+				}
+			});
+			List<String> existingAttachments = ticket.getFileAttachmentPath();
+			if (existingAttachments == null) {
+				existingAttachments = new ArrayList<>();
+			}
+			existingAttachments.addAll(newAttachments);
+			ticket.setFileAttachmentPath(existingAttachments);
+		}
+		ticketRepository.save(ticket);
+	}
+
+	public void updateTicketHistory(JsonNode json) {
+		Ticket ticket = ticketRepository.findById(json.get("id").asLong())
+				.orElseThrow(() -> new RuntimeException("Ticket not found"));
+		TicketHistory history = new TicketHistory();
 		history.setTicket(ticket);
 		String status = json.get("status").asText().toUpperCase();
 		history.setAction(Action.valueOf(status));
 		history.setActionBy(json.get("employee").asText());
-		history.setRole(json.get("role").asText());
-		if(status.equals("APPROVED")) {
+		String role = json.get("role").asText();
+		history.setRole(role);
+		if (status.equals("APPROVED")) {
 			history.setComments("Approved ticket by manager");
 		}
-		if(status.equals("REJECTED")) {
+		if (status.equals("REJECTED")) {
 			history.setComments("Rejected ticket by manager");
 		}
-		if(status.equals("CLOSED")) {
+		if (role.equals("USER") && status.equals("CLOSED")) {
 			history.setComments("Closed ticket by user");
 		}
-		if(status.equals("REOPENED")) {
+		if (role.equals("USER") && status.equals("REOPENED")) {
 			history.setComments("Reopened ticket by user");
+		}
+		if (role.equals("ADMIN") && status.equals("CLOSED")) {
+			history.setComments("Closed ticket by admin");
+		}
+		if (role.equals("ADMIN") && status.equals("REOPENED")) {
+			history.setComments("Reopened ticket by admin");
+		}
+		if (status.equals("RESOLVED")) {
+			history.setComments("Resolved ticket by admin");
+		}
+		if (status.equals("ASSIGNED")) {
+			history.setComments("Assigned ticket to admin by manager");
 		}
 		historyRepository.save(history);
 	}
 
-
-	public List<Ticket> getAllTicketsToApprove() {
-		return ticketRepository.findAll();
+	public List<Ticket> getAllTicketsToApprove(String id) {
+		return ticketRepository.findByManagerId(Long.parseLong(id));
 	}
 
 	public List<TicketHistory> getTicketHistory(Long id) {
 		return historyRepository.findByTicketId(id);
 	}
 
-	public List<Ticket> getAllTicketsToResolve() {
-		return ticketRepository.findByStatus(Status.APPROVED);
+	public List<Ticket> getAllTicketsToResolve(String name) {
+		return ticketRepository.findByStatusAndAssignee(Status.ASSIGNED, name);
 	}
-	
+
 }
