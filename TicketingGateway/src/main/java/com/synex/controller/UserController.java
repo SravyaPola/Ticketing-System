@@ -83,6 +83,7 @@ public class UserController {
 		ticketDto.setFileAttachments(savedPaths);
 		Employee employee = employeeRepository.findByName(principal.getName());
 		ticketDto.setManagerId(employee.getManagerId());
+		ticketDto.setRole("USER");
 		String message = client.sendToCreateTicket(ticketDto);
 		if (!message.equals("Failed")) {
 			model.addAttribute("message", "Token Successfully Created");
@@ -271,6 +272,15 @@ public class UserController {
 		model.addAttribute("activeRole", "USER");
 		model.addAttribute("ticketHistoryList", ticketHistoryList);
 		return "ticket-history";
+	}
+	@Controller
+	public class UiController {
+	    @GetMapping("/dashboard")
+	    public String dashboard(Model model,Principal principal) {
+	        // ensure currentUser is in the model for ${currentUser.id}
+	        model.addAttribute("currentUser", principal.getName());
+	        return "notification"; // resolves to /WEB-INF/jsp/dashboard.jsp
+	    }
 	}
 
 }

@@ -39,11 +39,12 @@ public class AuthServiceImpl implements AuthService {
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 			employee.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 			List<Role> roles = new ArrayList<Role>();
-			if (registerDto.getRoles() != null) {
-				for (String str : registerDto.getRoles()) {
-					roles.add(roleRepository.findByName(str));
-				}
-			}
+//			if (registerDto.getRoles() != null) {
+//				for (String str : registerDto.getRoles()) {
+//					roles.add(roleRepository.findByName(str));
+//				}
+//			}
+			roles.add(roleRepository.findByName("USER"));
 			employee.setRoles(roles);
 			employee.setDepartment(registerDto.getDepartment());
 			employee.setProject(registerDto.getProject());

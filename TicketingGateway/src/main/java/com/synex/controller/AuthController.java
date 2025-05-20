@@ -6,10 +6,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import com.synex.domain.Employee;
 import com.synex.domain.Role;
 import com.synex.model.LoginDto;
 import com.synex.model.RegisterDto;
 import com.synex.model.RoleForm;
+import com.synex.repository.EmployeeRepository;
 import com.synex.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 
@@ -18,9 +21,14 @@ public class AuthController {
 
 	@Autowired
 	private AuthService authService;
+	
+	@Autowired
+	private EmployeeRepository employeeRepository;
 
 	@GetMapping("/register")
 	public String showRegisterPage(Model model) {
+		List<Employee> managers = employeeRepository.findByRoles_Name("MANAGER");
+		model.addAttribute("managers", managers);
 		model.addAttribute("registerDto", new RegisterDto());
 		return "register";
 	}

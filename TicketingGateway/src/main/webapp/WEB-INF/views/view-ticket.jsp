@@ -21,7 +21,14 @@
    <p><strong>Priority:</strong> ${ticket.priority}</p>
    <p><strong>Category:</strong> ${ticket.category}</p>
    <p><strong>Created By:</strong> ${ticket.createdBy}</p>
-   <p><strong>Assignee:</strong> ${ticket.assignee}</p>
+   <p><strong>Assignee:</strong>
+     <c:if test="${not empty ticket.assignee}">
+       ${ticket.assignee}
+     </c:if>
+     <c:if test="${empty ticket.assignee}">
+       Not yet assigned
+     </c:if>
+   </p>
    <p><strong>Created On:</strong> ${ticket.creationDate}</p>
    <hr/>
 

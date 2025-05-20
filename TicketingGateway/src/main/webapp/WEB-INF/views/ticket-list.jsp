@@ -32,6 +32,8 @@
 
 
 	<p></p>
+	<c:choose>
+	  <c:when test="${not empty ticketList}">
 	<table border="1" width="100%" cellpadding="8">
 	    <thead>
 	        <tr>
@@ -94,6 +96,25 @@
 	    </c:forEach>
 	    </tbody>
 	</table>
+	</c:when>
+	 <c:otherwise>
+		<c:if test="${activeRole == 'USER'}">
+			<p style="color: red;">
+				No tickets have been created.
+			</p>
+		</c:if>
+		<c:if test="${activeRole == 'ADMIN'}">
+			<p style="color: red;">
+				No tickets to resolve.
+			</p>
+		</c:if>
+		<c:if test="${activeRole == 'MANAGER'}">
+			<p style="color: red;">
+				No tickets to approve.
+			</p>
+		</c:if>
+	  </c:otherwise>
+	</c:choose>
 </div>
 <script>
 	function toggleAssign(ticketId) {

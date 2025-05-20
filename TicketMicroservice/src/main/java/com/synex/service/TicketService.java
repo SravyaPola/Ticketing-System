@@ -1,6 +1,7 @@
 package com.synex.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,8 @@ public class TicketService {
 		history.setAction(Action.CREATED);
 		history.setActionBy(json.get("employee").asText());
 		history.setComments("created ticket by user");
+		String role = json.get("role").asText();
+		history.setRole(role);
 		historyRepository.save(history);
 
 	}
@@ -131,7 +134,8 @@ public class TicketService {
 	}
 
 	public List<Ticket> getAllTicketsToApprove(String id) {
-		return ticketRepository.findByManagerId(Long.parseLong(id));
+		List<Status> toApprove = Arrays.asList(Status.OPEN, Status.REOPENED, Status.APPROVED);
+		return ticketRepository.findByManagerIdAndStatusIn(Long.parseLong(id), toApprove);
 	}
 
 	public List<TicketHistory> getTicketHistory(Long id) {

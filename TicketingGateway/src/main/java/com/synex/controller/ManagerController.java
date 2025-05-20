@@ -41,7 +41,7 @@ public class ManagerController {
 	@GetMapping("/manager/tickets-to-approve")
 	public String showListOfTicketsToManager(Model model, Principal principal) {
 		Employee employee = employeeRepository.findByName(principal.getName());
-		String jsonString = client.sendToGetListOfAllTicketsToApprove(employee.getManagerId().toString());
+		String jsonString = client.sendToGetListOfAllTicketsToApprove(employee.getId().toString());
 		ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		List<TicketDto> ticketList = null;
 		try {

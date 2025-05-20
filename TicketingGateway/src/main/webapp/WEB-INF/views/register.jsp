@@ -22,22 +22,30 @@
 
         <label>Password:</label>
         <form:password path="password" />
-
+		<!-- 
         <label>Roles:</label>
         <div class="checkbox-group">
             <form:checkbox path="roles" value="USER" label="USER" />
             <form:checkbox path="roles" value="ADMIN" label="ADMIN" />
             <form:checkbox path="roles" value="MANAGER" label="MANAGER" />
         </div>
-
+		-->
         <label>Department:</label>
         <form:input path="department" />
 
         <label>Project:</label>
         <form:input path="project" />
 
-		<label>Manager ID:</label>
-		<form:input path="managerId" type="number" min="1" required="true" />
+		<label for="managerId">Manager:</label>
+		<form:select path="managerId" id="managerId">
+		  <form:option value="" label="-- Select Manager --" />
+		  <!-- 
+		       items="${managers}" 
+		       itemValue="id"     → the value submitted (manager.id)
+		       itemLabel="name"   → the text shown in each <option>
+		  -->
+		  <form:options items="${managers}" itemValue="id" itemLabel="name" />
+		</form:select>
 		<form:errors path="managerId" cssClass="error" />
 
         <input type="submit" value="Register" />
