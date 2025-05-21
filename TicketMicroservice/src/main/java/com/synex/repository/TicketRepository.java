@@ -17,6 +17,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
 	List<Ticket> findByManagerIdAndStatusIn(Long id, List<Status> statuses);
 	
-	List<Ticket> findByStatusAndActionDate(
+	List<Ticket> findByStatusAndCreationDateBefore(
 		    Status status, LocalDate cutoff);
 }

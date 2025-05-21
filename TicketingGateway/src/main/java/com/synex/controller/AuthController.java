@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import com.synex.domain.Employee;
 import com.synex.domain.Role;
 import com.synex.model.LoginDto;
@@ -14,6 +13,8 @@ import com.synex.model.RegisterDto;
 import com.synex.model.RoleForm;
 import com.synex.repository.EmployeeRepository;
 import com.synex.service.AuthService;
+import com.synex.service.TicketEventStore;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -21,9 +22,15 @@ public class AuthController {
 
 	@Autowired
 	private AuthService authService;
-	
+
 	@Autowired
 	private EmployeeRepository employeeRepository;
+	
+	private final TicketEventStore store;
+
+	public AuthController(TicketEventStore store) {
+		this.store = store;
+	}
 
 	@GetMapping("/register")
 	public String showRegisterPage(Model model) {
@@ -86,8 +93,10 @@ public class AuthController {
 
 	@GetMapping("/user/home")
 	public String showUserHome(Model model, Principal principal, HttpSession session) {
-		model.addAttribute("name", principal.getName());
+		String username = principal.getName();
+		model.addAttribute("name", username);
 		model.addAttribute("activeRole", session.getAttribute("activeRole"));
+		model.addAttribute("unreadCount", store.getUnreadCount());
 		return "user-dashboard";
 	}
 

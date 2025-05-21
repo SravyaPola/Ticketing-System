@@ -1,12 +1,8 @@
 package com.synex.repository;
 
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.synex.domain.Notification;
+import com.synex.domain.TicketEvent;
 
-public interface NotificationRepository extends JpaRepository<Notification, Long> {
+public interface NotificationRepository extends JpaRepository<TicketEvent, Integer>{
 
-	List<Notification> findByUserIdAndReadFalseOrderByCreatedAtDesc(Long userId);
-
-	long countByUserIdAndReadFalse(Long userId);
 }

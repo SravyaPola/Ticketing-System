@@ -1,10 +1,15 @@
 package com.synex.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.synex.domain.Action;
@@ -18,13 +23,18 @@ import com.synex.repository.TicketRepository;
 
 @Service
 public class TicketService {
+	
+	private static final String TICKET_EVENTS_QUEUE = "notification.queue";
 
 	@Autowired
 	TicketRepository ticketRepository;
 
 	@Autowired
 	TicketHistoryRepository historyRepository;
-
+	
+	@Autowired
+    private JmsTemplate jmsTemplate;
+	
 	public void saveTicket(JsonNode json) {
 		Ticket ticket = new Ticket();
 		ticket.setTitle(json.get("title").asText());
@@ -40,6 +50,8 @@ public class TicketService {
 		ticket.setCreatedBy(json.get("employee").asText());
 		ticket.setManagerId(json.get("managerId").asLong());
 		ticketRepository.save(ticket);
+		
+		
 		TicketHistory history = new TicketHistory();
 		history.setTicket(ticket);
 		history.setAction(Action.CREATED);

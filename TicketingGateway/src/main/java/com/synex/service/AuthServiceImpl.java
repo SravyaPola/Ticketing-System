@@ -1,4 +1,4 @@
-package com.synex.service;
+							package com.synex.service;
 
 import java.util.ArrayList;
 import java.util.List;

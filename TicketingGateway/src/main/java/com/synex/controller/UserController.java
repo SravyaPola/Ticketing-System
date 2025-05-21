@@ -273,14 +273,5 @@ public class UserController {
 		model.addAttribute("ticketHistoryList", ticketHistoryList);
 		return "ticket-history";
 	}
-	@Controller
-	public class UiController {
-	    @GetMapping("/dashboard")
-	    public String dashboard(Model model,Principal principal) {
-	        // ensure currentUser is in the model for ${currentUser.id}
-	        model.addAttribute("currentUser", principal.getName());
-	        return "notification"; // resolves to /WEB-INF/jsp/dashboard.jsp
-	    }
-	}
 
 }
