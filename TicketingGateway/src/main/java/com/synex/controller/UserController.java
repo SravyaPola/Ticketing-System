@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -67,7 +69,7 @@ public class UserController {
 						File dir = new File(uploadDir);
 						if (!dir.exists())
 							dir.mkdirs();
-						String fileName = principal.getName() + LocalDateTime.now() + "_" + file.getOriginalFilename();
+						String fileName = principal.getName() + "_" + LocalDateTime.now() + "_" + file.getOriginalFilename();
 						String fullPath = uploadDir + "/" + fileName;
 						file.transferTo(new File(fullPath));
 						savedPaths.add(fullPath);
@@ -272,6 +274,30 @@ public class UserController {
 		model.addAttribute("activeRole", "USER");
 		model.addAttribute("ticketHistoryList", ticketHistoryList);
 		return "ticket-history";
+	}
+	
+	@PostMapping("/user/send-for-approval/{id}")
+	public String sendForApprovalTicket(@PathVariable String id,RedirectAttributes attrs, Principal principal) {
+		Map<String, Object> jsonMap = new HashMap<>();
+		jsonMap.put("status", "PENDING_FOR_APPROVAL");
+		jsonMap.put("role", "USER");
+		jsonMap.put("id", id);
+		jsonMap.put("employee", principal.getName());
+		String json = null;
+		try {
+			json = new ObjectMapper().writeValueAsString(jsonMap);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			attrs.addFlashAttribute("message", "Failed to convert from String to Json");
+			return "redirect:/user/ticket-list";
+		}
+		String result = client.sendToUpdateTicketByUser(json);
+		if (result.equals("Success")) {
+			attrs.addFlashAttribute("message", "Successfully Send for Approval!");
+		} else {
+			attrs.addFlashAttribute("message", "Failed To Send For Approval!");
+		}
+		return "redirect:/user/ticket-list";
 	}
 
 }

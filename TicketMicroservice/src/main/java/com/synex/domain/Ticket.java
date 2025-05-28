@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -36,8 +37,12 @@ public class Ticket {
 	private Status status;
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "creation_date", updatable = false)
+	@Column(name = "created_at", updatable = false, nullable = false)
 	private Date creationDate;
+	@UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+	private Date updationDate;
 	@Enumerated(EnumType.STRING)
 	private Category category;
 	@ElementCollection
@@ -56,7 +61,7 @@ public class Ticket {
 		super();
 	}
 
-	public Ticket(Long id, String title, String description, Priority priority, Status status, Date creationDate,
+	public Ticket(Long id, String title, String description, Priority priority, Status status, Date creationDate, Date updationDate, 
 			Category category, List<String> fileAttachmentPath, String createdBy, String assignee,
 			List<TicketHistory> history, Long managerId) {
 		super();
@@ -69,9 +74,18 @@ public class Ticket {
 		this.category = category;
 		this.fileAttachmentPath = fileAttachmentPath;
 		this.createdBy = createdBy;
+		this.updationDate = updationDate;
 		this.assignee = assignee;
 		this.history = history;
 		this.managerId = managerId;
+	}
+
+	public Date getUpdationDate() {
+		return updationDate;
+	}
+
+	public void setUpdationDate(Date updationDate) {
+		this.updationDate = updationDate;
 	}
 
 	public Long getId() {

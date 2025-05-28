@@ -3,7 +3,10 @@ package com.synex.controller;
 import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.synex.domain.Employee;
@@ -14,7 +17,6 @@ import com.synex.model.RoleForm;
 import com.synex.repository.EmployeeRepository;
 import com.synex.service.AuthService;
 import com.synex.service.TicketEventStore;
-
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -25,7 +27,7 @@ public class AuthController {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
-	
+
 	private final TicketEventStore store;
 
 	public AuthController(TicketEventStore store) {
@@ -96,26 +98,56 @@ public class AuthController {
 		String username = principal.getName();
 		model.addAttribute("name", username);
 		model.addAttribute("activeRole", session.getAttribute("activeRole"));
-		model.addAttribute("unreadCount", store.getUnreadCount());
+		model.addAttribute("unreadCount", store.getUnreadCountFor(username));
 		return "user-dashboard";
 	}
 
 	@GetMapping("/admin/home")
 	public String showAdminHome(Model model, Principal principal, HttpSession session) {
-		model.addAttribute("name", principal.getName());
+		String username = principal.getName();
+		model.addAttribute("name", username);
 		model.addAttribute("activeRole", session.getAttribute("activeRole"));
+		model.addAttribute("unreadCount", store.getUnreadCountFor(username));
 		return "admin-dashboard";
 	}
 
 	@GetMapping("/manager/home")
 	public String showManagerHome(Model model, Principal principal, HttpSession session) {
-		model.addAttribute("name", principal.getName());
+		String username = principal.getName();
+		model.addAttribute("name", username);
 		model.addAttribute("activeRole", session.getAttribute("activeRole"));
+		Employee employee = employeeRepository.findByName(username);
+		model.addAttribute("unreadCount", store.getUnreadCountFor(employee.getId().toString()));
 		return "manager-dashboard";
 	}
 
 	@PostMapping("/logout-success")
 	public String logoutPage() {
 		return "logout";
+	}
+
+	@GetMapping("/get-email-details/{username}")
+	public ResponseEntity<String> getEmployeeEmail(@PathVariable String username) {
+		String email;
+		if (employeeRepository.existsByName(username)) {
+			Employee emp = employeeRepository.findByName(username);
+			email = emp.getEmail();
+		} else {
+			Long id;
+			try {
+				id = Long.parseLong(username);
+			} catch (NumberFormatException e) {
+				return ResponseEntity.badRequest().body("Invalid employee identifier: must be name or numeric ID");
+			}
+			Optional<Employee> optEmp = employeeRepository.findById(id);
+			if (!optEmp.isPresent()) {
+				return ResponseEntity.notFound().build();
+			}
+			email = optEmp.get().getEmail();
+		}
+		if (email == null || email.trim().isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(email);
 	}
 }

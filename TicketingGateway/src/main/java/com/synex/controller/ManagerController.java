@@ -133,6 +133,8 @@ public class ManagerController {
 		jsonMap.put("id", ticketDto.getId());
 		jsonMap.put("role", "MANAGER");
 		jsonMap.put("employee", principal.getName());
+		jsonMap.put("reason", reason);
+		System.out.println(reason);
 		model.addAttribute("activeRole", "MANAGER");
 		String json = null;
 		try {

@@ -55,27 +55,55 @@
 	</ul>
    <hr/>
 
-   <c:if test="${activeRole == 'USER'}">
-     <div class="inline-button-group" id="actionButtons">
-			    <form id="closeForm" method="post" action="${pageContext.request.contextPath}/user/close-ticket/${ticket.id}">
-			        <button type="submit" class="action-button">Close</button>
-			    </form>
-				<form id="reopenForm" method="post" action="${pageContext.request.contextPath}/user/reopen-ticket/${ticket.id}">
-					<button type="submit" class="action-button">ReOpen</button>
-				</form>
-		</div>
+   <c:if test="${activeRole eq 'USER' and ticket.status eq 'RESOLVED'}">
+	<div id="actionButtons"
+	         class="d-flex flex-column gap-2 mb-4">
+	      <form method="post"
+	            action="${pageContext.request.contextPath}/user/close-ticket/${ticket.id}"
+	            class="m-0">
+	        <button type="submit"
+	                class="btn btn-secondary w-100">
+	          Close
+	        </button>
+	      </form>
+	    </div>
    </c:if>
-
+   <c:if test="${activeRole eq 'USER' and ticket.status eq 'CLOSED'}">
+	<div id="actionButtons"
+		         class="d-flex flex-column gap-2 mb-4">
+		      <form method="post"
+		            action="${pageContext.request.contextPath}/user/reopen-ticket/${ticket.id}"
+		            class="m-0">
+		        <button type="submit"
+		                class="btn btn-secondary w-100">
+		          ReOpen
+		        </button>
+		      </form>
+		    </div>
+   </c:if>
    <c:if test="${activeRole == 'MANAGER'}">
-	<div class="inline-button-group" id="actionButtons">
-	    <form id="approveForm" method="post" action="${pageContext.request.contextPath}/manager/approve-ticket/${ticket.id}">
-	        <button type="submit" class="action-button">Approve</button>
-	    </form>
+	<div id="actionButtons"
+			         class="d-flex flex-column gap-2 mb-4">
+		<form id="approveForm"
+		      method="post"
+		      action="${pageContext.request.contextPath}/manager/approve-ticket/${ticket.id}"
+		      class="m-0">
+		  <button type="submit"
+		          class="btn btn-secondary w-100">
+		    Approve
+		  </button>
+		</form>
 
-	    <form id="rejectToggleForm" onsubmit="return false;">
-	        <button type="button" class="action-button"
-	                onclick="showRejectForm()">Reject</button>
-	    </form>
+		<form id="rejectToggleForm"
+		      onsubmit="return false;"
+		      class="m-0">
+		  <button type="button"
+		          class="btn btn-secondary w-100"
+		          onclick="showRejectForm()">
+		    Reject
+		  </button>
+		</form>
+
 	</div>
 	<form id="rejectForm"
 	      method="post"
@@ -91,18 +119,49 @@
 
    </c:if>
 
-   <c:if test="${activeRole == 'ADMIN'}">
-	<div class="inline-button-group" id="actionButtons">
-		<form id="resolveForm" method="post" action="${pageContext.request.contextPath}/admin/resolve-ticket/${ticket.id}">
-				<button type="submit" class="action-button">Resolve</button>
-		</form>
-		<form id="closeForm" method="post" action="${pageContext.request.contextPath}/admin/close-ticket/${ticket.id}">
-				<button type="submit" class="action-button">Close</button>
-		</form>
-		<form id="reopenForm" method="post" action="${pageContext.request.contextPath}/admin/reopen-ticket/${ticket.id}">
-				<button type="submit" class="action-button">ReOpen</button>
-		</form>
-	</div>
+   <c:if test="${activeRole eq 'ADMIN'}">
+     <div id="actionButtons"
+          class="d-flex flex-column gap-2 mb-4">
+       <button type="button"
+               id="startResolveBtn"
+               class="btn btn-success w-100"
+               onclick="showResolveDetails()">
+         Resolve
+       </button>
+       <form method="post"
+             action="${pageContext.request.contextPath}/admin/close-ticket/${ticket.id}"
+             class="m-0">
+         <button type="submit"
+                 class="btn btn-secondary w-100">
+           Close
+         </button>
+       </form>
+       <form method="post"
+             action="${pageContext.request.contextPath}/admin/reopen-ticket/${ticket.id}"
+             class="m-0">
+         <button type="submit"
+                 class="btn btn-secondary w-100">
+           ReOpen
+         </button>
+       </form>
+     </div>
+     <form id="resolveDetailsForm"
+           method="post"
+           action="${pageContext.request.contextPath}/admin/resolve-ticket/${ticket.id}"
+           style="display:none;"
+           class="mb-4">
+       <div class="mb-3">
+         <textarea name="resolutionComment"
+                   class="form-control"
+                   rows="4"
+                   placeholder="Enter resolution comments"
+                   required></textarea>
+       </div>
+       <button type="submit"
+               class="btn btn-success w-100">
+         Submit Resolve
+       </button>
+     </form>
    </c:if>
 
 </div>
@@ -113,6 +172,11 @@
         document.getElementById('rejectToggleForm').style.display = 'none';
         document.getElementById('approveForm').style.display = 'none';
     }
+	function showResolveDetails() {
+	    document.getElementById('startResolveBtn').style.display = 'none';
+	    document.getElementById('resolveDetailsForm').style.display = 'block';
+	    document.querySelector('#resolveDetailsForm textarea').focus();
+	  }
 </script>
 
 

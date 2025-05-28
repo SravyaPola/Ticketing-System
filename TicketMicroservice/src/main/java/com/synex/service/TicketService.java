@@ -1,15 +1,12 @@
 package com.synex.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.synex.domain.Action;
@@ -17,24 +14,26 @@ import com.synex.domain.Category;
 import com.synex.domain.Priority;
 import com.synex.domain.Status;
 import com.synex.domain.Ticket;
+import com.synex.domain.TicketEvent;
 import com.synex.domain.TicketHistory;
 import com.synex.repository.TicketHistoryRepository;
 import com.synex.repository.TicketRepository;
 
 @Service
 public class TicketService {
-	
-	private static final String TICKET_EVENTS_QUEUE = "notification.queue";
 
 	@Autowired
 	TicketRepository ticketRepository;
 
 	@Autowired
 	TicketHistoryRepository historyRepository;
-	
-	@Autowired
-    private JmsTemplate jmsTemplate;
-	
+
+	private final JmsProducer producer;
+
+	public TicketService(JmsProducer producer) {
+		this.producer = producer;
+	}
+
 	public void saveTicket(JsonNode json) {
 		Ticket ticket = new Ticket();
 		ticket.setTitle(json.get("title").asText());
@@ -49,17 +48,34 @@ public class TicketService {
 		ticket.setStatus(Status.OPEN);
 		ticket.setCreatedBy(json.get("employee").asText());
 		ticket.setManagerId(json.get("managerId").asLong());
-		ticketRepository.save(ticket);
-		
-		
+		Ticket ticketSaved = ticketRepository.save(ticket);
+
 		TicketHistory history = new TicketHistory();
 		history.setTicket(ticket);
 		history.setAction(Action.CREATED);
 		history.setActionBy(json.get("employee").asText());
-		history.setComments("created ticket by user");
+		history.setComments("created ticket by you.");
 		String role = json.get("role").asText();
 		history.setRole(role);
 		historyRepository.save(history);
+
+		TicketEvent eventForUser = new TicketEvent();
+		eventForUser.setEmployeeId(json.get("employee").asText());
+		eventForUser.setMessage(
+				"You have Created A Ticket with id : " + ticketSaved.getId() + ". Please save it for futher reference.");
+		eventForUser.setStatus("CREATED");
+		String now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		eventForUser.setReceivedAt(now);
+		producer.send(eventForUser);
+
+		TicketEvent eventForManager = new TicketEvent();
+		eventForManager.setReceivedAt(now);
+		eventForManager.setStatus(Status.OPEN.toString());
+		eventForManager.setTicketId(ticketSaved.getId().toString());
+		eventForManager.setManagerId(ticketSaved.getManagerId().toString());
+		eventForManager.setMessage(
+				"Ticket " + ticket.getId() + " was created by " + ticketSaved.getCreatedBy() + ". Please approve it.");
+		producer.send(eventForManager);
 
 	}
 
@@ -118,35 +134,91 @@ public class TicketService {
 		history.setActionBy(json.get("employee").asText());
 		String role = json.get("role").asText();
 		history.setRole(role);
+
+		TicketEvent eventForUser = new TicketEvent();
+		String now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+		eventForUser.setReceivedAt(now);
+		eventForUser.setStatus(Action.valueOf(status).toString());
+		eventForUser.setTicketId(ticket.getId().toString());
+		eventForUser.setEmployeeId(ticket.getCreatedBy());
+
 		if (status.equals("APPROVED")) {
-			history.setComments("Approved ticket by manager");
+			history.setComments("Ticket " + ticket.getId() + " was approved by " + json.get("employee").asText());
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was approved by " + json.get("employee").asText());
 		}
 		if (status.equals("REJECTED")) {
-			history.setComments("Rejected ticket by manager");
+			history.setComments(json.get("reason").asText());
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was rejected by " + json.get("employee").asText() +". Please check your email for rejection reason. Further Steps are enclosed in it.");
 		}
 		if (role.equals("USER") && status.equals("CLOSED")) {
-			history.setComments("Closed ticket by user");
+			history.setComments("Ticket " + ticket.getId() + " was closed by you.");
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was closed by you.");
+		}
+		if (status.equals("PENDING_FOR_APPROVAL")) {
+			history.setComments("Ticket " + ticket.getId() + " was send for approval to your manager.");
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was send for approval to your manager.");
 		}
 		if (role.equals("USER") && status.equals("REOPENED")) {
-			history.setComments("Reopened ticket by user");
+			history.setComments("Ticket " + ticket.getId() + " was reopened by you.");
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was reopened by you.");
 		}
 		if (role.equals("ADMIN") && status.equals("CLOSED")) {
-			history.setComments("Closed ticket by admin");
+			history.setComments("Ticket " + ticket.getId() + " was closed by " + json.get("employee").asText());
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was closed by " + json.get("employee").asText());
 		}
 		if (role.equals("ADMIN") && status.equals("REOPENED")) {
-			history.setComments("Reopened ticket by admin");
+			history.setComments("Ticket " + ticket.getId() + " was reopened by " + json.get("employee").asText());
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was reopened by " + json.get("employee").asText());
 		}
 		if (status.equals("RESOLVED")) {
-			history.setComments("Resolved ticket by admin");
+			history.setComments(json.get("comments").asText());
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was resolved by " + json.get("employee").asText());
 		}
 		if (status.equals("ASSIGNED")) {
-			history.setComments("Assigned ticket to admin by manager");
+			history.setComments("Ticket " + ticket.getId() + " was assigned by " + json.get("employee").asText());
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was assigned by " + json.get("employee").asText());
 		}
 		historyRepository.save(history);
+		producer.send(eventForUser);
+		if (status.equals("APPROVED")) {
+			TicketEvent eventForManager = new TicketEvent();
+			eventForManager.setReceivedAt(now);
+			eventForManager.setStatus(Action.valueOf(status).toString());
+			eventForManager.setTicketId(ticket.getId().toString());
+			eventForManager.setManagerId(ticket.getManagerId().toString());
+			eventForManager.setMessage("Ticket " + ticket.getId() + " was approved. Please Assign it to Admin.");
+			producer.send(eventForManager);
+		}
+		if (status.equals("PENDING_FOR_APPROVAL")) {
+			TicketEvent eventForManager = new TicketEvent();
+			eventForManager.setReceivedAt(now);
+			eventForManager.setStatus(Action.valueOf(status).toString());
+			eventForManager.setTicketId(ticket.getId().toString());
+			eventForManager.setManagerId(ticket.getManagerId().toString());
+			eventForManager.setMessage("Ticket " + ticket.getId() + " was send for approval by " + json.get("employee").asText() +  ". Please Approve it.");
+			producer.send(eventForManager);
+		}
+		String admin = ticket.getAssignee();
+		if (admin != null) {
+			if (status.equals("REOPENED") || status.equals("ASSIGNED")) {
+				TicketEvent eventForAdmin = new TicketEvent();
+				eventForAdmin.setReceivedAt(now);
+				eventForAdmin.setStatus(Action.valueOf(status).toString());
+				eventForAdmin.setTicketId(ticket.getId().toString());
+				eventForAdmin.setAdminId(admin);
+				if (status.equals("REOPENED")) {
+					eventForAdmin.setMessage("Ticket " + ticket.getId() + " was reopened by " + json.get("employee").asText() + ". Please resolve it.");
+				}
+				if (status.equals("ASSIGNED")) {
+					eventForAdmin.setMessage("Ticket " + ticket.getId() + " was assigned to you by " + json.get("employee").asText() + ". Please resolve it.");
+				}
+				producer.send(eventForAdmin);
+			}
+		}
 	}
 
 	public List<Ticket> getAllTicketsToApprove(String id) {
-		List<Status> toApprove = Arrays.asList(Status.OPEN, Status.REOPENED, Status.APPROVED);
+		List<Status> toApprove = Arrays.asList(Status.OPEN, Status.APPROVED, Status.PENDING_FOR_APPROVAL);
 		return ticketRepository.findByManagerIdAndStatusIn(Long.parseLong(id), toApprove);
 	}
 
@@ -155,7 +227,8 @@ public class TicketService {
 	}
 
 	public List<Ticket> getAllTicketsToResolve(String name) {
-		return ticketRepository.findByStatusAndAssignee(Status.ASSIGNED, name);
+		List<Status> toResolve = Arrays.asList(Status.REOPENED, Status.ASSIGNED);
+		return ticketRepository.findByAssigneeAndStatusIn(name, toResolve);
 	}
 
 }

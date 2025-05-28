@@ -28,6 +28,7 @@ public class MyClient {
 	private static final String urlToUpdateTicketByManager = "http://localhost:8383/manager/update-ticket";
 	private static final String urlToUpdateTicketByAdmin = "http://localhost:8383/admin/update-ticket";
 	private static final String urlToUpdateTicketToAssign = "http://localhost:8383/manager/assign-ticket";
+	private static final String urlToSendForApproval = "http://localhost:8383/user/send-for-approval";
 
 	public String sendToCreateTicket(TicketDto ticketDto) {
 		HttpHeaders headers = new HttpHeaders();

@@ -303,6 +303,59 @@ select {
 
 
 
+/* ------------------------------------------------------------------
+   STACK AND SPACE OUT YOUR ACTION BUTTONS
+   ------------------------------------------------------------------ */
+#actionButtons {
+  display: flex;
+  flex-direction: column;   /* stack vertically */
+  gap: 1rem;                /* 1rem (~16px) between each button/form */
+  margin-bottom: 2rem;      /* space before the hidden resolve form */
+}
+
+/* Make every button or form in that container fill 100% width */
+#actionButtons > button,
+#actionButtons > form {
+  width: 100%;
+  box-sizing: border-box;   /* include padding/border in the width */
+}
+
+/* ─── STACK THE THREE ACTIONS ─── */
+#actionButtons {
+  display: flex;               /* turn on flexbox */
+  flex-direction: column;      /* stack vertically */
+  align-items: stretch;        /* all children fill width */
+}
+
+/* ─── EVEN GAP BETWEEN RESOLVE / CLOSE / REOPEN ─── */
+#actionButtons > * {
+  margin-bottom: 1rem;         /* 1rem (~16px) under each */
+  width: 100%;                 /* full-width buttons/forms */
+  box-sizing: border-box;
+}
+#actionButtons > *:last-child {
+  margin-bottom: 0;            /* no gap after the last button */
+}
+
+/* ─── GAP BEFORE THE HIDDEN COMMENT FORM ─── */
+#resolveDetailsForm {
+  display: none;               /* stays hidden until JS fires */
+  margin-top: 1.5rem;          /* 1.5rem gap above the textarea */
+}
+
+/* ─── TEXTAREA + SUBMIT RESOLVE SPACING ─── */
+#resolveDetailsForm textarea {
+  margin-bottom: 1rem;         /* 1rem under the textarea */
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 120px;           /* ~4–5 lines tall */
+}
+#resolveDetailsForm button {
+  width: 100%;                 /* full-width submit button */
+  box-sizing: border-box;
+}
+
+
 
 
 

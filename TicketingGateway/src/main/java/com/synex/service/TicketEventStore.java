@@ -1,38 +1,40 @@
 package com.synex.service;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
-
 import com.synex.domain.TicketEvent;
-
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class TicketEventStore {
 
-	private final List<TicketEvent> unread = new CopyOnWriteArrayList<>();
-    private final List<TicketEvent> read   = new CopyOnWriteArrayList<>();
-
-    /** Called from your @JmsListener */
-    public void add(TicketEvent e) {
-        unread.add(e);
+    private final ConcurrentHashMap<String, CopyOnWriteArrayList<TicketEvent>> unreadMap 
+      = new ConcurrentHashMap<>();
+    public void add(TicketEvent e) {  
+        Stream.of(e.getEmployeeId(), e.getManagerId(), e.getAdminId())
+              .filter(Objects::nonNull)
+              .forEach(userId ->
+                  unreadMap
+                    .computeIfAbsent(userId, id -> new CopyOnWriteArrayList<>())
+                    .add(e)
+              );
+    }
+   
+    public List<TicketEvent> findUnreadFor(String userId) {
+        return Collections.unmodifiableList(
+            unreadMap.getOrDefault(userId, new CopyOnWriteArrayList<>())
+        );
     }
 
-    /** For your notifications page: ALL events */
-    public List<TicketEvent> findAll() {
-        List<TicketEvent> all = new CopyOnWriteArrayList<>(read);
-        all.addAll(unread);
-        return all;
+    public int getUnreadCountFor(String userId) {
+        return findUnreadFor(userId).size();
     }
 
-    /** How many are still unread */
-    public int getUnreadCount() {
-        return unread.size();
-    }
-
-    /** After you show /user/notifications, mark them read */
-    public void markAllRead() {
-        read.addAll(unread);
-        unread.clear();
+    public void markAllReadFor(String userId) {
+        unreadMap.remove(userId);
     }
 }

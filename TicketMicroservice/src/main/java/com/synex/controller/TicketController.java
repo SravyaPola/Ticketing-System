@@ -5,19 +5,15 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synex.domain.Ticket;
-import com.synex.domain.TicketEvent;
 import com.synex.domain.TicketHistory;
-import com.synex.service.JmsProducer;
 import com.synex.service.TicketService;
 
 @Controller
@@ -26,20 +22,9 @@ public class TicketController {
 	@Autowired
 	TicketService ticketService;
 
-	private final JmsProducer producer;
-
-	public TicketController(JmsProducer producer) {
-		this.producer = producer;
-	}
-
 	@PostMapping("/user/create-ticket")
 	public ResponseEntity<String> createTicket(@RequestBody JsonNode json) {
 		ticketService.saveTicket(json);
-		TicketEvent e = new TicketEvent();
-		e.setEmployeeId("1");
-		e.setMessage("Created");
-		e.setStatus("CREATED");
-		producer.send(e);
 		return ResponseEntity.ok("Successfully Token was created");
 	}
 
@@ -72,6 +57,7 @@ public class TicketController {
 	public ResponseEntity<String> updateTicketByUser(@RequestBody JsonNode json) {
 		ticketService.updateUserTicket(json);
 		if (json.has("status")) {
+			System.out.print(json.get("status").asText());
 			ticketService.updateTicketHistory(json);
 		}
 		return ResponseEntity.ok("Successfully Ticket was Updated");
@@ -125,6 +111,15 @@ public class TicketController {
 		} catch (Exception e) {
 			return ResponseEntity.noContent().build();
 		}
+	}
+
+	@GetMapping("/ticket-history/{id}")
+	public ResponseEntity<List<TicketHistory>> getTicketHistoryGet(@PathVariable("id") Long id) {
+		List<TicketHistory> allTickets = ticketService.getTicketHistory(id);
+		if (allTickets.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+		return ResponseEntity.ok(allTickets);
 	}
 
 	@PostMapping("/manager/assign-ticket")

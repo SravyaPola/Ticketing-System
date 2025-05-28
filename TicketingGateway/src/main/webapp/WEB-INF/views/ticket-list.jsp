@@ -29,7 +29,9 @@
 	<div id="assignSuccessMessage" style="display:none; color:green; font-weight:bold;">Assigned successfully!</div>
 	<div id="assignErrorMessage" style="display:none; color:red; font-weight:bold;">Failed to assign.</div>
 
-
+	<c:if test="${not empty message}">
+	            <div class="approvalMessage">${message}</div>
+	</c:if>
 
 	<p></p>
 	<c:choose>
@@ -59,31 +61,54 @@
 				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/view-ticket/${ticket.id}'">View</button>
 				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/update-ticket/${ticket.id}'">Update</button>
 				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/ticket-history/${ticket.id}'">History</button>
+							<c:if test="${ticket.status == 'REJECTED'}">
+								<form action="${pageContext.request.contextPath}/user/send-for-approval/${ticket.id}"
+								      method="post">
+								  <button type="submit">
+								    Send for Approval
+								  </button>
+								</form>
+							</c:if>
 				        </c:if>
 
-				        <c:if test="${activeRole == 'MANAGER'}">
-							<div class="action-row">
-							    <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/manager/view-ticket/${ticket.id}'">View</button>
-							    <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/manager/ticket-history/${ticket.id}'">History</button>
+						<c:if test="${activeRole == 'MANAGER'}">
+						  <div class="action-row">
+						    <button type="button"
+						            onclick="window.location.href='${pageContext.request.contextPath}/manager/view-ticket/${ticket.id}'">
+						      View
+						    </button>
+						    <button type="button"
+						            onclick="window.location.href='${pageContext.request.contextPath}/manager/ticket-history/${ticket.id}'">
+						      History
+						    </button>
+						    <c:if test="${ticket.status eq 'APPROVED'}">
+						      <button type="button"
+						              class="assign-toggle-btn"
+						              onclick="toggleAssign(${ticket.id})">
+						        Assign
+						      </button>
 
-							    <button type="button" class="assign-toggle-btn" onclick="toggleAssign(${ticket.id})">Assign</button>
+						      <form id="assignForm-${ticket.id}"
+						            action="${pageContext.request.contextPath}/manager/assign-ticket/${ticket.id}"
+						            method="post"
+						            style="display: none;"
+						            onsubmit="return submitAssign(${ticket.id});"
+						            class="assign-form">
+						        <select name="assignee" required>
+						          <option value="" disabled selected hidden>
+						            Select Assignee
+						          </option>
+						          <c:forEach var="admin" items="${admins}">
+						            <option value="${admin.name}">${admin.name}</option>
+						          </c:forEach>
+						        </select>
+						        <button type="submit">Submit</button>
+						      </form>
+						    </c:if>
 
-							    <form id="assignForm-${ticket.id}"
-							          action="${pageContext.request.contextPath}/manager/assign-ticket/${ticket.id}"
-							          method="post"
-							          style="display: none;"
-							          onsubmit="return submitAssign(${ticket.id});"
-							          class="assign-form">
-									  <select name="assignee" required>
-									    <option value="" disabled selected hidden>Select Assignee</option>
-									    <c:forEach var="admin" items="${admins}">
-									      <option value="${admin.name}">${admin.name}</option>
-									    </c:forEach>
-									  </select>
-							      <button type="submit">Submit</button>
-							    </form>
-							  </div>
-				        </c:if>
+						  </div>
+						</c:if>
+
 
 				        <c:if test="${activeRole == 'ADMIN'}">
 				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/admin/view-ticket/${ticket.id}'">View</button>

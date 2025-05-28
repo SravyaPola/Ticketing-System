@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>User Dashboard</title>
-  <!-- make sure you’re including Bootstrap CSS -->
+ 
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -27,7 +27,7 @@
           <div class="col-12 col-md-4">
             <button
               class="btn btn-primary w-100"
-              onclick="location.href='${pageContext.request.contextPath}/user/view-tickets'"
+              onclick="location.href='${pageContext.request.contextPath}/user/ticket-list'"
             >
               View Tickets
             </button>
@@ -52,17 +52,16 @@
 
         <hr class="my-4"/>
 
-        <button
-          class="btn btn-secondary w-50"
-          onclick="location.href='${pageContext.request.contextPath}/logout'"
-        >
-          Logout
-        </button>
+		<form action="<c:url value='/logout-success' />" method="post" style="margin-top: 20px;">
+		  <button type="submit" class="btn btn-secondary w-50">
+		    Logout
+		  </button>
+		</form>
+
       </div>
     </div>
   </div>
 
-  <!-- optionally include Bootstrap JS bundle -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
   ></script>
