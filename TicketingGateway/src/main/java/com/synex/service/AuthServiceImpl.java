@@ -1,4 +1,4 @@
-							package com.synex.service;
+package com.synex.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +29,9 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public String register(RegisterDto registerDto) {
 		if (employeeRepository.existsByName(registerDto.getName())) {
-			return "User name is already exists!.";
+			return "Username is already exists!";
 		} else if (employeeRepository.existsByEmail(registerDto.getEmail())) {
-			return "Email is already exists!.";
+			return "Email is already exists!";
 		} else {
 			Employee employee = new Employee();
 			employee.setName(registerDto.getName());
@@ -39,11 +39,6 @@ public class AuthServiceImpl implements AuthService {
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 			employee.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 			List<Role> roles = new ArrayList<Role>();
-//			if (registerDto.getRoles() != null) {
-//				for (String str : registerDto.getRoles()) {
-//					roles.add(roleRepository.findByName(str));
-//				}
-//			}
 			roles.add(roleRepository.findByName("USER"));
 			employee.setRoles(roles);
 			employee.setDepartment(registerDto.getDepartment());

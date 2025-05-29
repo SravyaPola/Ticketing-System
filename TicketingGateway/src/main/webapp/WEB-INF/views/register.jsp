@@ -1,55 +1,101 @@
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>User Registration</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+  <meta charset="UTF-8"/>
+  <title>Register</title>
+  <link rel="stylesheet"
+        href="${pageContext.request.contextPath}/css/theme.css"/>
 </head>
 <body>
-    <form:form method="post" modelAttribute="registerDto">
-        <h2>Register</h2>
+  <div class="form-container">
+    <header>
+      <h1 class="form-title">Register</h1>
+    </header>
 
-        <c:if test="${not empty error}">
-            <div class="error">${error}</div>
-        </c:if>
+    <!-- Global error -->
+    <c:if test="${not empty error}">
+      <div class="form-message error">${error}</div>
+    </c:if>
 
-        <label>Username:</label>
-        <form:input path="name" />
+    <form:form method="post"
+               modelAttribute="registerDto"
+               action="${pageContext.request.contextPath}/register"
+               cssClass="auth-form">
 
-        <label>Email:</label>
-        <form:input path="email" />
+      <div class="form-group">
+        <label for="name">Username <span class="required">*</span></label>
+        <form:input path="name"
+                    id="name"
+                    required="required"/>
+        <form:errors path="name"
+                     cssClass="form-message error"/>
+      </div>
 
-        <label>Password:</label>
-        <form:password path="password" />
-		<!-- 
-        <label>Roles:</label>
-        <div class="checkbox-group">
-            <form:checkbox path="roles" value="USER" label="USER" />
-            <form:checkbox path="roles" value="ADMIN" label="ADMIN" />
-            <form:checkbox path="roles" value="MANAGER" label="MANAGER" />
-        </div>
-		-->
-        <label>Department:</label>
-        <form:input path="department" />
+      <div class="form-group">
+        <label for="email">Email <span class="required">*</span></label>
+        <form:input path="email"
+                    id="email"
+                    type="email"
+                    required="required"/>
+        <form:errors path="email"
+                     cssClass="form-message error"/>
+      </div>
 
-        <label>Project:</label>
-        <form:input path="project" />
+      <div class="form-group">
+        <label for="password">Password <span class="required">*</span></label>
+        <form:password path="password"
+                       id="password"
+                       required="required"/>
+        <form:errors path="password"
+                     cssClass="form-message error"/>
+      </div>
 
-		<label for="managerId">Manager:</label>
-		<form:select path="managerId" id="managerId">
-		  <form:option value="" label="-- Select Manager --" />
-		  <!-- 
-		       items="${managers}" 
-		       itemValue="id"     → the value submitted (manager.id)
-		       itemLabel="name"   → the text shown in each <option>
-		  -->
-		  <form:options items="${managers}" itemValue="id" itemLabel="name" />
-		</form:select>
-		<form:errors path="managerId" cssClass="error" />
+      <div class="form-group">
+        <label for="department">Department <span class="required">*</span></label>
+        <form:input path="department"
+                    id="department"
+                    required="required"/>
+        <form:errors path="department"
+                     cssClass="form-message error"/>
+      </div>
 
-        <input type="submit" value="Register" />
-        <a href="/login">Already have an account? Login</a>
+      <div class="form-group">
+        <label for="project">Project <span class="required">*</span></label>
+        <form:input path="project"
+                    id="project"
+                    required="required"/>
+        <form:errors path="project"
+                     cssClass="form-message error"/>
+      </div>
+
+      <div class="form-group">
+        <label for="managerId">Manager <span class="required">*</span></label>
+        <form:select path="managerId"
+                     id="managerId"
+                     required="required">
+          <form:option value="" label="-- Select Manager --"/>
+          <form:options items="${managers}"
+                        itemValue="id"
+                        itemLabel="name"/>
+        </form:select>
+        <form:errors path="managerId"
+                     cssClass="form-message error"/>
+      </div>
+
+      <button type="submit"
+              class="btn btn--full">
+        Register
+      </button>
     </form:form>
+
+    <div class="form-footer">
+      <a href="${pageContext.request.contextPath}/login">
+        Already have an account? Login
+      </a>
+    </div>
+  </div>
 </body>
 </html>

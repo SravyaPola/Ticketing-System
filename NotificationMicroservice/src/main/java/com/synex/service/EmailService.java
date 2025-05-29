@@ -151,43 +151,35 @@ public class EmailService {
 			throw new IllegalStateException("Failed to send email", ex);
 		}
 	}
-	
-	public void sendFeedbackRequestEmail(TicketEvent event) throws Exception {
-        
-        String feedbackEmail = "sravyapola2000@gmail.com";
-        String subject = "Feedback for Ticket " + event.getTicketId();
-        String encodedSubject = URLEncoder.encode(subject, StandardCharsets.UTF_8);
-        StringBuilder html = new StringBuilder();
-        html.append("<html><body style=\"font-family:Helvetica,Arial,sans-serif;\">");
-        html.append("<p>Hi,</p>");
-        html.append("<p>We’d love your feedback on ticket <strong>").append(event.getTicketId()).append("</strong>. ");
-        html.append("Please click a rating below to open your email app:</p>");
-        html.append("<p style=\"font-size:1.2em;\">");
-        for (int i = 1; i <= 5; i++) {
-            String bodyParam = URLEncoder.encode(
-                "Ticket: " + event.getTicketId() + "\nRating: " + i + "\nComments: ",
-                StandardCharsets.UTF_8
-            );
-            String mailto = String.format(
-                "mailto:%s?subject=%s&body=%s",
-                feedbackEmail, encodedSubject, bodyParam
-            );
-            html.append(String.format(
-                "<a href=\"%s\" style=\"margin:0 6px;text-decoration:none;\">%d</a>",
-                mailto, i
-            ));
-        }
-        html.append("</p>");
-        html.append("<p>Or just hit “Reply” and type your comments.</p>");
-        html.append("<p>Thanks and regards,<br/>SynergisticIT</p>");
-        html.append("</body></html>");
 
-        MimeMessage msg = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
-        helper.setTo(ecs.getEmailDetails(event.getEmployeeId()));
-        helper.setSubject("We Value Your Feedback for Ticket " + event.getTicketId());
-        helper.setText(html.toString(), true);
-        mailSender.send(msg);
-    }
+	public void sendFeedbackRequestEmail(TicketEvent event) throws Exception {
+
+		String feedbackEmail = "sravyapola2000@gmail.com";
+		String subject = "Feedback for Ticket " + event.getTicketId();
+		String encodedSubject = URLEncoder.encode(subject, StandardCharsets.UTF_8);
+		StringBuilder html = new StringBuilder();
+		html.append("<html><body style=\"font-family:Helvetica,Arial,sans-serif;\">");
+		html.append("<p>Hi,</p>");
+		html.append("<p>We’d love your feedback on ticket <strong>").append(event.getTicketId()).append("</strong>. ");
+		html.append("Please click a rating below to open your email app:</p>");
+		html.append("<p style=\"font-size:1.2em;\">");
+		for (int i = 1; i <= 5; i++) {
+			String bodyParam = URLEncoder.encode("Ticket: " + event.getTicketId() + "\nRating: " + i + "\nComments: ",
+					StandardCharsets.UTF_8);
+			String mailto = String.format("mailto:%s?subject=%s&body=%s", feedbackEmail, encodedSubject, bodyParam);
+			html.append(String.format("<a href=\"%s\" style=\"margin:0 6px;text-decoration:none;\">%d</a>", mailto, i));
+		}
+		html.append("</p>");
+		html.append("<p>Or just hit “Reply” and type your comments.</p>");
+		html.append("<p>Thanks and regards,<br/>SynergisticIT</p>");
+		html.append("</body></html>");
+
+		MimeMessage msg = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
+		helper.setTo(ecs.getEmailDetails(event.getEmployeeId()));
+		helper.setSubject("We Value Your Feedback for Ticket " + event.getTicketId());
+		helper.setText(html.toString(), true);
+		mailSender.send(msg);
+	}
 
 }

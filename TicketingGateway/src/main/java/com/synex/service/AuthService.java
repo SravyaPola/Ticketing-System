@@ -1,9 +1,7 @@
 package com.synex.service;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
-
 import com.synex.domain.Role;
 import com.synex.model.LoginDto;
 import com.synex.model.RegisterDto;

@@ -2,7 +2,6 @@ package com.synex.component;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

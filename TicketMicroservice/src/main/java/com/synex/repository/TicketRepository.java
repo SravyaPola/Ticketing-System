@@ -1,6 +1,5 @@
 package com.synex.repository;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,9 +14,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 	List<Ticket> findByAssigneeAndStatusIn(String assignee, List<Status> statuses);
 
 	List<Ticket> findByManagerIdAndStatusIn(Long id, List<Status> statuses);
-	
-	List<Ticket> findByStatusAndCreationDateBefore(
-		    Status status, LocalDateTime sevenDaysAgo);
+
+	List<Ticket> findByStatusAndCreationDateBefore(Status status, LocalDateTime sevenDaysAgo);
 
 	List<Ticket> findByStatusAndUpdationDateBefore(Status status, LocalDateTime fiveDaysAgo);
 }

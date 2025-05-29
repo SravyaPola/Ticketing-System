@@ -54,15 +54,15 @@ public class TicketService {
 		history.setTicket(ticket);
 		history.setAction(Action.CREATED);
 		history.setActionBy(json.get("employee").asText());
-		history.setComments("created ticket by you.");
+		history.setComments("created ticket by user.");
 		String role = json.get("role").asText();
 		history.setRole(role);
 		historyRepository.save(history);
 
 		TicketEvent eventForUser = new TicketEvent();
 		eventForUser.setEmployeeId(json.get("employee").asText());
-		eventForUser.setMessage(
-				"You have Created A Ticket with id : " + ticketSaved.getId() + ". Please save it for futher reference.");
+		eventForUser.setMessage("You have Created A Ticket with id : " + ticketSaved.getId()
+				+ ". Please save it for futher reference.");
 		eventForUser.setStatus("CREATED");
 		String now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 		eventForUser.setReceivedAt(now);
@@ -148,10 +148,11 @@ public class TicketService {
 		}
 		if (status.equals("REJECTED")) {
 			history.setComments(json.get("reason").asText());
-			eventForUser.setMessage("Ticket " + ticket.getId() + " was rejected by " + json.get("employee").asText() +". Please check your email for rejection reason. Further Steps are enclosed in it.");
+			eventForUser.setMessage("Ticket " + ticket.getId() + " was rejected by " + json.get("employee").asText()
+					+ ". Please check your email for rejection reason. Further Steps are enclosed in it.");
 		}
 		if (role.equals("USER") && status.equals("CLOSED")) {
-			history.setComments("Ticket " + ticket.getId() + " was closed by you.");
+			history.setComments("Ticket " + ticket.getId() + " was closed by user.");
 			eventForUser.setMessage("Ticket " + ticket.getId() + " was closed by you.");
 		}
 		if (status.equals("PENDING_FOR_APPROVAL")) {
@@ -159,7 +160,7 @@ public class TicketService {
 			eventForUser.setMessage("Ticket " + ticket.getId() + " was send for approval to your manager.");
 		}
 		if (role.equals("USER") && status.equals("REOPENED")) {
-			history.setComments("Ticket " + ticket.getId() + " was reopened by you.");
+			history.setComments("Ticket " + ticket.getId() + " was reopened by user.");
 			eventForUser.setMessage("Ticket " + ticket.getId() + " was reopened by you.");
 		}
 		if (role.equals("ADMIN") && status.equals("CLOSED")) {
@@ -195,7 +196,8 @@ public class TicketService {
 			eventForManager.setStatus(Action.valueOf(status).toString());
 			eventForManager.setTicketId(ticket.getId().toString());
 			eventForManager.setManagerId(ticket.getManagerId().toString());
-			eventForManager.setMessage("Ticket " + ticket.getId() + " was send for approval by " + json.get("employee").asText() +  ". Please Approve it.");
+			eventForManager.setMessage("Ticket " + ticket.getId() + " was send for approval by "
+					+ json.get("employee").asText() + ". Please Approve it.");
 			producer.send(eventForManager);
 		}
 		String admin = ticket.getAssignee();
@@ -207,10 +209,12 @@ public class TicketService {
 				eventForAdmin.setTicketId(ticket.getId().toString());
 				eventForAdmin.setAdminId(admin);
 				if (status.equals("REOPENED")) {
-					eventForAdmin.setMessage("Ticket " + ticket.getId() + " was reopened by " + json.get("employee").asText() + ". Please resolve it.");
+					eventForAdmin.setMessage("Ticket " + ticket.getId() + " was reopened by "
+							+ json.get("employee").asText() + ". Please resolve it.");
 				}
 				if (status.equals("ASSIGNED")) {
-					eventForAdmin.setMessage("Ticket " + ticket.getId() + " was assigned to you by " + json.get("employee").asText() + ". Please resolve it.");
+					eventForAdmin.setMessage("Ticket " + ticket.getId() + " was assigned to you by "
+							+ json.get("employee").asText() + ". Please resolve it.");
 				}
 				producer.send(eventForAdmin);
 			}

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
-
 import com.synex.domain.TicketEvent;
 import com.synex.repository.NotificationRepository;
 import com.synex.service.EmailService;
@@ -28,19 +27,19 @@ public class TicketEventListener {
 		System.out.println("Received message: " + event);
 		TicketEvent saved = notificationRepository.save(event);
 		emailService.sendEmail(saved);
-		if(event.isAutoTrigger()) {
-			if(saved.getEmployeeId() != null) {
+		if (event.isAutoTrigger()) {
+			if (saved.getEmployeeId() != null) {
 				emailService.sendToUser(saved);
 			}
-			if(saved.getManagerId() != null) {
+			if (saved.getManagerId() != null) {
 				emailService.sendToManager(saved);
 			}
 		}
-		if(event.getEmployeeId() != null && event.getStatus().equals("RESOLVED")) {
+		if (event.getEmployeeId() != null && event.getStatus().equals("RESOLVED")) {
 			System.out.println("called");
 			emailService.sendTicketResolutionReport(event);
 		}
-		if(event.getEmployeeId() != null && event.getStatus().equals("CLOSED")){
+		if (event.getEmployeeId() != null && event.getStatus().equals("CLOSED")) {
 			try {
 				emailService.sendFeedbackRequestEmail(event);
 			} catch (Exception e) {

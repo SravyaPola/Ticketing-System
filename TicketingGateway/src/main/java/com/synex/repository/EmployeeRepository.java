@@ -10,13 +10,13 @@ import com.synex.domain.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 	Employee findByName(String name);
-	
+
 	Optional<Employee> findById(Long id);
 
 	boolean existsByEmail(String email);
 
 	boolean existsByName(String name);
-	
+
 	List<Employee> findByRoles_Name(String roleName);
 
 }

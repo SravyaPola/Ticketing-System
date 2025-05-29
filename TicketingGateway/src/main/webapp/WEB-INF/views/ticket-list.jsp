@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <head>
 	<head>
@@ -14,9 +15,16 @@
 			<title>Tickets to Resolve</title>
 		</c:if>
 	</head>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
+	<link
+	  rel="stylesheet"
+	  href="${pageContext.request.contextPath}/css/ticket-list.css"
+	/>
+
 </head>
-<div>
+<body>
+	
+	<div class="app-wrapper">
+
 	<c:if test="${activeRole == 'MANAGER'}">
 	    <h2>Tickets to Approve</h2>
 	</c:if>
@@ -53,69 +61,88 @@
 	            <td>${status.index + 1}</td>
 	            <td>${ticket.title}</td>
 	            <td>${ticket.priority}</td>
-	            <td>${ticket.status}</td>
-	            <td><c:out value="${ticket.assignee != null ? ticket.assignee : 'N/A'}" /></td>
-				<td class="ticket-actions">
-				    <div class="action-buttons">
-				        <c:if test="${activeRole == 'USER'}">
-				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/view-ticket/${ticket.id}'">View</button>
-				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/update-ticket/${ticket.id}'">Update</button>
-				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/user/ticket-history/${ticket.id}'">History</button>
-							<c:if test="${ticket.status == 'REJECTED'}">
-								<form action="${pageContext.request.contextPath}/user/send-for-approval/${ticket.id}"
-								      method="post">
-								  <button type="submit">
-								    Send for Approval
-								  </button>
-								</form>
-							</c:if>
-				        </c:if>
-
-						<c:if test="${activeRole == 'MANAGER'}">
-						  <div class="action-row">
-						    <button type="button"
-						            onclick="window.location.href='${pageContext.request.contextPath}/manager/view-ticket/${ticket.id}'">
-						      View
-						    </button>
-						    <button type="button"
-						            onclick="window.location.href='${pageContext.request.contextPath}/manager/ticket-history/${ticket.id}'">
-						      History
-						    </button>
-						    <c:if test="${ticket.status eq 'APPROVED'}">
-						      <button type="button"
-						              class="assign-toggle-btn"
-						              onclick="toggleAssign(${ticket.id})">
-						        Assign
-						      </button>
-
-						      <form id="assignForm-${ticket.id}"
-						            action="${pageContext.request.contextPath}/manager/assign-ticket/${ticket.id}"
-						            method="post"
-						            style="display: none;"
-						            onsubmit="return submitAssign(${ticket.id});"
-						            class="assign-form">
-						        <select name="assignee" required>
-						          <option value="" disabled selected hidden>
-						            Select Assignee
-						          </option>
-						          <c:forEach var="admin" items="${admins}">
-						            <option value="${admin.name}">${admin.name}</option>
-						          </c:forEach>
-						        </select>
-						        <button type="submit">Submit</button>
-						      </form>
-						    </c:if>
-
-						  </div>
-						</c:if>
-
-
-				        <c:if test="${activeRole == 'ADMIN'}">
-				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/admin/view-ticket/${ticket.id}'">View</button>
-				            <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/admin/ticket-history/${ticket.id}'">History</button>
-				        </c:if>
-				    </div>
+				<td class="status-${fn:toLowerCase(ticket.status).replaceAll('_','-')}">
+				  ${ticket.status}
 				</td>
+
+
+	            <td><c:out value="${ticket.assignee != null ? ticket.assignee : 'Not Assigned'}" /></td>
+				<td class="ticket-actions">
+				  <!-- USER actions -->
+				  <c:if test="${activeRole == 'USER'}">
+				    <div class="action-buttons user-actions">
+				      <button
+				        type="button"
+				        onclick="location.href='${pageContext.request.contextPath}/user/view-ticket/${ticket.id}'">
+				        View
+				      </button>
+				      <button
+				        type="button"
+				        onclick="location.href='${pageContext.request.contextPath}/user/update-ticket/${ticket.id}'">
+				        Update
+				      </button>
+				      <button
+				        type="button"
+				        onclick="location.href='${pageContext.request.contextPath}/user/ticket-history/${ticket.id}'">
+				        History
+				      </button>
+				      <c:if test="${ticket.status == 'REJECTED'}">
+				        <form
+				          action="${pageContext.request.contextPath}/user/send-for-approval/${ticket.id}"
+				          method="post"
+				          class="assign-form"
+				        >
+				          <button type="submit" class="send-approval">
+				            Send for Approval
+				          </button>
+				        </form>
+				      </c:if>
+				    </div>
+				  </c:if>
+
+				  <!-- MANAGER actions -->
+				 <c:if test="${activeRole == 'MANAGER'}">
+							<div class="action-row">
+							    <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/manager/view-ticket/${ticket.id}'">View</button>
+							    <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/manager/ticket-history/${ticket.id}'">History</button>
+								<c:if test="${ticket.status == 'APPROVED'}">
+							    <button type="button" class="assign-toggle-btn" onclick="toggleAssign(${ticket.id})">Assign</button>
+
+							    <form id="assignForm-${ticket.id}"
+							          action="${pageContext.request.contextPath}/manager/assign-ticket/${ticket.id}"
+							          method="post"
+							          style="display: none;"
+							          onsubmit="return submitAssign(${ticket.id});"
+							          class="assign-form">
+									  <select name="assignee" required>
+									    <option value="" disabled selected hidden>Select Assignee</option>
+									    <c:forEach var="admin" items="${admins}">
+									      <option value="${admin.name}">${admin.name}</option>
+									    </c:forEach>
+									  </select>
+							      <button type="submit">Submit</button>
+							    </form>
+								</c:if>
+							  </div>
+				        </c:if>
+
+				  <!-- ADMIN actions -->
+				  <c:if test="${activeRole == 'ADMIN'}">
+				    <div class="action-buttons admin-actions">
+				      <button
+				        type="button"
+				        onclick="location.href='${pageContext.request.contextPath}/admin/view-ticket/${ticket.id}'">
+				        View
+				      </button>
+				      <button
+				        type="button"
+				        onclick="location.href='${pageContext.request.contextPath}/admin/ticket-history/${ticket.id}'">
+				        History
+				      </button>
+				    </div>
+				  </c:if>
+				</td>
+
 
 	        </tr>
 	    </c:forEach>
@@ -124,23 +151,24 @@
 	</c:when>
 	 <c:otherwise>
 		<c:if test="${activeRole == 'USER'}">
-			<p style="color: red;">
+			<p class="no-data-message">
 				No tickets have been created.
 			</p>
 		</c:if>
 		<c:if test="${activeRole == 'ADMIN'}">
-			<p style="color: red;">
+			<p class="no-data-message">
 				No tickets to resolve.
 			</p>
 		</c:if>
 		<c:if test="${activeRole == 'MANAGER'}">
-			<p style="color: red;">
-				No tickets to approve.
+			<p class="no-data-message">
+			    No tickets to approve.
 			</p>
 		</c:if>
 	  </c:otherwise>
 	</c:choose>
 </div>
+</body>
 <script>
 	function toggleAssign(ticketId) {
 	  const form = document.getElementById('assignForm-' + ticketId);

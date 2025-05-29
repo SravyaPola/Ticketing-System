@@ -1,0 +1,136 @@
+/* =============================================================================
+   user-dashboard.css — Service-Grid Style for User Dashboard
+   ============================================================================= */
+
+/* 1) Variables */
+:root {
+  --color-bg:            #f4f6f8;    /* page background */
+  --color-header-bg:     #005073;    /* deep teal header */
+  --color-header-text:   #ffffff;
+  --color-card-bg:       #ffffff;    /* service cards */
+  --color-text:          #333333;
+  --color-text-light:    #616161;
+  --color-primary:       #005073;    /* icon circle */
+  --color-danger:        #d32f2f;    /* badge */
+  --radius:              8px;        /* rounding */
+  --spacing-lg:          2rem;
+  --spacing-md:          1rem;
+  --spacing-sm:          0.75rem;
+}
+
+/* 2) Body & Container */
+body {
+  background-color: var(--color-bg);
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  color: var(--color-text);
+}
+.dashboard-container {
+  padding: var(--spacing-lg) 0;
+}
+
+/* 3) Header */
+/* in your dashboard.css */
+
+.dashboard-header {
+  background-color: var(--color-header-bg);
+  color: var(--color-header-text);
+  padding: var(--spacing-md);
+  border-radius: var(--radius) var(--radius) 0 0;
+  text-align: center;
+}
+
+/* Title stays white */
+.dashboard-header h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-header-text);
+}
+
+/* Make the sub-text white (80% opacity) so it shows up */
+.dashboard-header p {
+  margin: 0.5rem 0 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: var(--font-size-md);
+}
+
+
+/* 4) Card Wrapper */
+.dashboard-card {
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* 5) Grid of “services” */
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+/* 6) Single service item */
+.service-item {
+  background: var(--color-card-bg);
+  border-radius: var(--radius);
+  text-align: center;
+  padding: var(--spacing-md);
+  transition: transform 0.2s;
+  position: relative;
+}
+.service-item:hover {
+  transform: translateY(-5px);
+}
+
+/* 7) Icon circle */
+.service-item .icon-circle {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto var(--spacing-sm);
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  position: relative;
+}
+
+/* 8) Badge for notifications */
+.service-item .badge-notify {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: var(--color-danger);
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.25em 0.4em;
+  font-size: 0.75rem;
+}
+
+/* 9) Service label */
+.service-item h5 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* 10) Logout form styling inside grid */
+.service-item form {
+  margin: 0;
+}
+.service-item form button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  width: 100%;
+  text-align: inherit;
+}

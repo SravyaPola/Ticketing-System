@@ -1,0 +1,132 @@
+/* ======================================
+   Theme Color Variables
+   ====================================== */
+:root {
+  --notification-bg:       #fdfdfd; /* off-white */
+  --notification-border:   #d1d1d1; /* light gray */
+  --notification-hover:    #f5f5f5; /* slightly darker off-white */
+
+  /* Back button: green */
+  --btn-back-bg:           #28a745;
+  --btn-back-hover:        #218838;
+
+  /* Logout button: orange */
+  --btn-logout-bg:         #e85d04;
+  --btn-logout-hover:      #bc4d03;
+
+  --text-color:            #333333; /* dark gray */
+}
+
+/* ======================================
+   Container & Page Title
+   ====================================== */
+.notifications-col {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.page-title {
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ======================================
+   Notification List & Items
+   ====================================== */
+.notifications-list {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.notification {
+  background-color: var(--notification-bg);
+  border: 1px solid var(--notification-border);
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.notification:hover {
+  background-color: var(--notification-hover);
+}
+
+.notification > div {
+  margin-bottom: 0.5rem;
+}
+
+.notification > div:last-child {
+  margin-bottom: 0;
+}
+
+/* ======================================
+   Buttons Row (Equal-size, Centered)
+   ====================================== */
+.row.notifications-btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* wrapper just centers the button—no width rules here */
+.notifications-btn-col {
+  display: flex;
+  justify-content: center;
+}
+
+/* apply fixed size directly to *both* buttons */
+.btn-back,
+.btn-logout {
+  width: 180px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  transition: background-color 0.15s ease-in-out;
+  color: #fff;
+  border: none;
+  text-align: center;
+  padding: 0; /* remove default padding */
+}
+
+/* “Back to Dashboard” */
+.btn-back {
+  background-color: var(--btn-back-bg);
+}
+.btn-back:hover,
+.btn-back:focus {
+  background-color: var(--btn-back-hover);
+  outline: none;
+}
+
+/* “Logout” */
+.btn-logout {
+  background-color: var(--btn-logout-bg);
+}
+.btn-logout:hover,
+.btn-logout:focus {
+  background-color: var(--btn-logout-hover);
+  outline: none;
+}
+
+/* ======================================
+   Responsive tweak
+   ====================================== */
+@media (max-width: 576px) {
+  .row.notifications-btn-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .btn-back,
+  .btn-logout {
+    width: 100%;   /* full width on mobile */
+    max-width: none;
+  }
+}

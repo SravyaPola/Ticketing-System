@@ -2,7 +2,6 @@ package com.synex.service;
 
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
-
 import com.synex.domain.TicketEvent;
 
 @Service

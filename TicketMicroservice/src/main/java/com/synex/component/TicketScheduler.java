@@ -25,12 +25,14 @@ public class TicketScheduler {
 	private final TicketHistoryRepository historyRepository;
 	private final JmsProducer producer;
 
-	public TicketScheduler(TicketRepository ticketRepo, JmsProducer producer, TicketHistoryRepository historyRepository) {
+	public TicketScheduler(TicketRepository ticketRepo, JmsProducer producer,
+			TicketHistoryRepository historyRepository) {
 		this.ticketRepo = ticketRepo;
 		this.producer = producer;
 		this.historyRepository = historyRepository;
 	}
-	@Scheduled(cron = "0 0 21 * * *")
+
+	@Scheduled(cron = "0 0 9 * * *")
 	public void notifyLongPendingTickets() {
 		LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
 		List<Ticket> stalePendings = ticketRepo.findByStatusAndCreationDateBefore(Status.OPEN, sevenDaysAgo);
@@ -43,9 +45,9 @@ public class TicketScheduler {
 				eventForManager.setStatus(Status.OPEN.toString());
 				eventForManager.setTicketId(ticket.getId().toString());
 				eventForManager.setManagerId(ticket.getManagerId().toString());
-				eventForManager.setMessage(
-						"Found that ticket with id : " + ticket.getId() + " is pending_for_approval for > 7 days which was created by "
-								+ ticket.getCreatedBy() + ". Please approve it.");
+				eventForManager.setMessage("Found that ticket with id : " + ticket.getId()
+						+ " is pending_for_approval for > 7 days which was created by " + ticket.getCreatedBy()
+						+ ". Please approve it.");
 				eventForManager.setAutoTrigger(true);
 				producer.send(eventForManager);
 			}
@@ -54,7 +56,7 @@ public class TicketScheduler {
 		}
 	}
 
-	@Scheduled(cron = "0 0 22 * * *")
+	@Scheduled(cron = "0 0 9 * * *")
 	public void autoCloseResolvedTickets() {
 		LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
 		List<Ticket> staleResolved = ticketRepo.findByStatusAndUpdationDateBefore(Status.RESOLVED, fiveDaysAgo);
@@ -64,7 +66,8 @@ public class TicketScheduler {
 			for (Ticket ticket : staleResolved) {
 				TicketEvent eventForUser = new TicketEvent();
 				eventForUser.setEmployeeId(ticket.getCreatedBy());
-				eventForUser.setMessage("Your ticket " + ticket.getId() + " has been auto-closed after 5 days in RESOLVED status.");
+				eventForUser.setMessage(
+						"Your ticket " + ticket.getId() + " has been auto-closed after 5 days in RESOLVED status.");
 				eventForUser.setTicketId(ticket.getId().toString());
 				eventForUser.setStatus("CLOSED");
 				eventForUser.setAutoTrigger(true);

@@ -67,12 +67,13 @@ public class TicketHistoryDto {
 	public void setRole(String role) {
 		this.role = role;
 	}
+
 	public Date getActionDateAsDate() {
-	    try {
-	        return new Date(Long.parseLong(actionDate));
-	    } catch (Exception e) {
-	        return null;
-	    }
+		try {
+			return new Date(Long.parseLong(actionDate));
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

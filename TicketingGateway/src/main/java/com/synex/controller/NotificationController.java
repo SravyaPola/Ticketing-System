@@ -2,12 +2,10 @@ package com.synex.controller;
 
 import java.security.Principal;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import com.synex.domain.Employee;
 import com.synex.domain.TicketEvent;
 import com.synex.repository.EmployeeRepository;
@@ -21,7 +19,7 @@ public class NotificationController {
 	public NotificationController(TicketEventStore store) {
 		this.store = store;
 	}
-	
+
 	@Autowired
 	EmployeeRepository employeeRepository;
 

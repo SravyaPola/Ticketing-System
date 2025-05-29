@@ -1,0 +1,236 @@
+/* ========== IMPORTS & VARIABLES ========== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Color Palette */
+  --bg-page:       #f4f6f8;
+  --bg-card:       #ffffff;
+  --text-default:  #333333;
+  --text-muted:    #6c757d;
+  --border-light:  #e0e0e0;
+
+  --brand-primary:   #0052cc;
+  --brand-secondary: #6c757d;
+  --brand-success:   #28a745;
+  --brand-danger:    #dc3545;
+
+  --status-open:        #17a2b8;
+  --status-pending-for-approval: #6f42c1;
+  --status-resolved:    #28a745;
+  --status-closed:      #6c757d;
+  --status-reopened:    #fd7e14;
+  --status-rejected:    #d9534f;
+  --status-assigned: #20c997;
+  --status-approved: #ffb6c1;
+
+  --font-base: 'Inter', sans-serif;
+  --radius:    8px;
+  --spacing:   16px;
+  --transition: 0.2s ease-in-out;
+}
+
+/* ========== GLOBAL RESET ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background: var(--bg-page);
+  color: var(--text-default);
+  font-family: var(--font-base);
+  line-height: 1.6;
+  padding: var(--spacing);
+}
+
+/* ========== LAYOUT ========== */
+.app-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing) 0;
+}
+.ticket-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 700px;
+  padding: calc(var(--spacing) * 1.5);
+  margin-bottom: var(--spacing);
+}
+
+/* ========== FLASH MESSAGE ========== */
+.message-box {
+  background: var(--brand-primary);
+  color: #fff;
+  padding: var(--spacing) / 2;
+  border-radius: var(--radius) / 2;
+  margin-bottom: var(--spacing);
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ========== HEADER ========== */
+.ticket-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing) / 2;
+  color: var(--brand-primary);
+}
+.ticket-header hr {
+  border: none;
+  height: 2px;
+  background: var(--border-light);
+  margin-bottom: var(--spacing);
+}
+
+/* ========== DETAILS ========== */
+.ticket-details {
+  margin-bottom: var(--spacing);
+}
+.detail-item {
+  display: flex;
+  margin-bottom: var(--spacing) / 2;
+}
+.detail-item strong {
+  width: 110px;
+  color: var(--text-muted);
+}
+.detail-item span,
+.detail-item p {
+  flex: 1;
+}
+
+/* ========== STATUS BADGE ========== */
+.status {
+  display: inline-block;      /* shrink to its text */
+  width: auto;
+  padding: 0.25em .75em;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: #fff;
+}
+/* make sure it never flexes to fill the row */
+.detail-item .status {
+  flex: 0 0 auto;
+}
+
+.status-open      { background: var(--status-open);      }
+.status-pending-for-approval {
+  background: var(--status-pending-for-approval);
+  color: #fff;    
+  }
+  .status-assigned {
+    background: var(--status-assigned);
+    color: #fff;
+	}
+.status-resolved  { background: var(--status-resolved);  }
+.status-approved  { background: var(--status-approved);  }
+.status-closed    { background: var(--status-closed);    }
+.status-reopened  { background: var(--status-reopened);  }
+.status-rejected {
+  background: var(--status-rejected);
+  /* inheriting the .status rules gives you white text, padding, border-radius, etc. */
+}
+/* ========== DESCRIPTION ========== */
+.ticket-description {
+  margin-bottom: var(--spacing);
+}
+.ticket-description blockquote {
+  margin: var(--spacing) 0;
+  padding: var(--spacing);
+  background: #fafafa;
+  border-left: 4px solid var(--border-light);
+  border-radius: var(--radius)/2;
+  font-style: italic;
+}
+
+/* ========== ATTACHMENTS ========== */
+.attachments {
+  margin-bottom: var(--spacing);
+}
+.attachments ul {
+  list-style: none;
+  padding-left: 0;
+}
+.attachments li {
+  margin-bottom: calc(var(--spacing) / 4);
+}
+.attachments a {
+  color: var(--brand-primary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.attachments a:hover {
+  color: var(--brand-primary);
+  text-decoration: underline;
+}
+
+/* ========== BUTTONS ========== */
+.btn {
+  display: inline-block;
+  padding: 0.5em 1.2em;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: center;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  margin-right: var(--spacing); /* full gap between approve/reject */
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn:last-child { margin-right: 0; }
+
+.btn-primary   { background: var(--brand-primary);   color: #fff; }
+.btn-secondary { background: var(--brand-secondary); color: #fff; }
+.btn-success   { background: var(--brand-success);   color: #fff; }
+.btn-danger    { background: var(--brand-danger);    color: #fff; }
+
+/* ========== ACTION FORMS ========== */
+.ticket-actions {
+  margin-top: var(--spacing);
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) / 2);
+  align-items: center;
+}
+
+/* Inline forms */
+.ticket-form {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) / 2);
+  width: 100%;
+  max-width: 400px;
+  margin-top: calc(var(--spacing) / 2);
+  animation: fadeIn var(--transition) ease-in-out;
+}
+.ticket-form input[type="text"],
+.ticket-form textarea {
+  width: 100%;
+  padding: 0.5em;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  font-family: var(--font-base);
+  resize: vertical;
+}
+/* ↪ tiny extra gap before the “Submit Reject” button */
+.ticket-form .btn {
+  margin: 0;
+  margin-top: calc(var(--spacing) / 4);
+}
+
+/* Reject container to stack Approve/Reject neatly */
+.reject-container {
+  position: relative;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

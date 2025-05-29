@@ -5,9 +5,7 @@ import java.util.Date;
 import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -40,8 +38,8 @@ public class Ticket {
 	@Column(name = "created_at", updatable = false, nullable = false)
 	private Date creationDate;
 	@UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at", nullable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "updated_at", nullable = false)
 	private Date updationDate;
 	@Enumerated(EnumType.STRING)
 	private Category category;
@@ -61,8 +59,8 @@ public class Ticket {
 		super();
 	}
 
-	public Ticket(Long id, String title, String description, Priority priority, Status status, Date creationDate, Date updationDate, 
-			Category category, List<String> fileAttachmentPath, String createdBy, String assignee,
+	public Ticket(Long id, String title, String description, Priority priority, Status status, Date creationDate,
+			Date updationDate, Category category, List<String> fileAttachmentPath, String createdBy, String assignee,
 			List<TicketHistory> history, Long managerId) {
 		super();
 		this.id = id;

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -131,7 +130,8 @@ public class AdminController {
 	}
 
 	@PostMapping("/admin/resolve-ticket/{id}")
-	public String approveTicket(@PathVariable String id, @RequestParam("resolutionComment") String resolutionComment, Model model, TicketDto ticketDto, Principal principal) {
+	public String approveTicket(@PathVariable String id, @RequestParam("resolutionComment") String resolutionComment,
+			Model model, TicketDto ticketDto, Principal principal) {
 		Map<String, Object> jsonMap = new HashMap<>();
 		jsonMap.put("status", "RESOLVED");
 		jsonMap.put("id", ticketDto.getId());
@@ -156,31 +156,6 @@ public class AdminController {
 		}
 		return "view-ticket";
 	}
-
-//	@PostMapping("/admin/assign-ticket/{id}")
-//	public String rejectTicket(@PathVariable String id, TicketDto ticketDto, Model model, Principal principal) {
-//		Map<String, Object> jsonMap = new HashMap<>();
-//		jsonMap.put("status", "ASSIGNED");
-//		jsonMap.put("id", ticketDto.getId());
-//		jsonMap.put("role", "ADMIN");
-//		jsonMap.put("employee", principal.getName());
-//		model.addAttribute("activeRole", "ADMIN");
-//		String json = null;
-//		try {
-//			json = new ObjectMapper().writeValueAsString(jsonMap);
-//		} catch (JsonProcessingException e) {
-//			e.printStackTrace();
-//			model.addAttribute("message", "Failed to convert from String to Json");
-//			return "view-ticket";
-//		}
-//		String result = client.sendToUpdateTicketByAdmin(json);
-//		if (result.equals("Success")) {
-//			model.addAttribute("message", "Successfully Assigned Ticket");
-//		} else {
-//			model.addAttribute("message", "Failed To Assign Ticket");
-//		}
-//		return "view-ticket";
-//	}
 
 	@GetMapping("/admin/ticket-history/{id}")
 	public String showTicketHistory(@PathVariable String id, Model model, Principal principal) {

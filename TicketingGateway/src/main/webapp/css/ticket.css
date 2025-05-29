@@ -1,0 +1,171 @@
+/* =============================================================================
+   ticket.css — Professional Ticket-Creation Form
+   ============================================================================= */
+
+/* 1) Variables */
+:root {
+  --color-bg:            #f4f6f8;
+  --color-card-bg:       #ffffff;
+  --color-text:          #333333;
+  --color-text-light:    #616161;
+  --color-border:        #d1d5da;
+  --color-accent:        #005073;
+  --color-accent-light:  rgba(0,80,115,0.1);
+  --color-error:         #d32f2f;
+
+  --radius:              6px;
+  --shadow-card:         0 4px 12px rgba(0,0,0,0.08);
+
+  --spacing-lg:          2rem;
+  --spacing-md:          1rem;
+  --spacing-sm:          0.75rem;
+  --spacing-xs:          0.5rem;
+
+  --font-family:         'Segoe UI', Roboto, Arial, sans-serif;
+  --font-size-base:      16px;
+  --font-size-md:        1rem;
+  --font-size-sm:        0.875rem;
+}
+
+/* 2) Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  height: 100%;
+}
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+}
+
+/* 3) Container Card */
+.container {
+  background-color: var(--color-card-bg);
+  width: 100%;
+  max-width: 600px;
+  padding: var(--spacing-lg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  margin: var(--spacing-lg) 0;
+}
+
+/* 4) Heading */
+.container h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-accent);
+}
+
+/* 5) Messages */
+.message {
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-md);
+}
+.message.success {
+  color: green;
+}
+.message.error {
+  color: var(--color-error);
+}
+
+/* 6) Form Elements */
+form label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+}
+form input[type="text"],
+form textarea,
+form select,
+form input[type="file"] {
+  width: 100%;
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  background-color: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  margin-bottom: var(--spacing-md);
+  transition: border-color 0.2s;
+}
+form textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+form input[type="file"] {
+  padding: 0.3rem;
+}
+form input:focus,
+form textarea:focus,
+form select:focus {
+  border-color: var(--color-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-accent-light);
+}
+
+/* 7) Form Buttons */
+.form-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+.form-buttons button {
+  flex: 1;
+  padding: var(--spacing-sm);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  text-transform: uppercase;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.form-buttons button[type="submit"] {
+  background-color: var(--color-accent);
+  color: #fff;
+}
+.form-buttons button[type="submit"]:hover,
+.form-buttons button[type="submit"]:focus {
+  background-color: #003b5c;
+  outline: none;
+}
+.form-buttons button[type="reset"] {
+  background-color: #e0e0e0;
+  color: var(--color-text);
+}
+.form-buttons button[type="reset"]:hover,
+.form-buttons button[type="reset"]:focus {
+  background-color: #c6c6c6;
+  outline: none;
+}
+
+/* 8) Back Link */
+.container a {
+  display: inline-block;
+  margin-top: var(--spacing-sm);
+  color: var(--color-accent);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+}
+.container a:hover,
+.container a:focus {
+  text-decoration: underline;
+}
+/* Center the global message in the ticket form */
+.message {
+  text-align: center;
+}
