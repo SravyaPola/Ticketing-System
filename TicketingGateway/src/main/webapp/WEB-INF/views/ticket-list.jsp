@@ -44,7 +44,8 @@
 	<p></p>
 	<c:choose>
 	  <c:when test="${not empty ticketList}">
-	<table border="1" width="100%" cellpadding="8">
+		<div class="table-wrapper">
+		  <table class="tickets-to-approve" border="1" cellpadding="8">
 	    <thead>
 	        <tr>
 	            <th>ID</th>

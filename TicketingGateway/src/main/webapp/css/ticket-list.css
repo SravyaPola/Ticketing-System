@@ -279,3 +279,41 @@ body, .app-wrapper, .ticket-card {
   margin: var(--spacing-lg) 0;   /* vertical breathing room */
 }
 
+/* ───────────────────────────────────────────────────────────────
+   5) Table Styling (update)
+   ─────────────────────────────────────────────────────────────── */
+table {
+  /* width: 100%;    ← remove or comment out this line */
+  border-collapse: collapse;
+  margin-bottom: var(--spacing-md);
+}
+
+/* ───────────────────────────────────────────────────────────────
+   Prevent any overflow from breaking out
+   ─────────────────────────────────────────────────────────────── */
+/* Was: body, .app-wrapper, .ticket-card { overflow-x: hidden; } */
+body {
+  overflow-x: hidden;
+}
+.app-wrapper {
+  overflow-x: visible;    /* allow inner elements (our wrapper) to scroll */
+}
+
+/* ───────────────────────────────────────────────────────────────
+   13) Horizontal‐scroll wrapper
+   ─────────────────────────────────────────────────────────────── */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   14) Let the table expand past its container
+   ─────────────────────────────────────────────────────────────── */
+.table-wrapper table {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: collapse;  /* keep your borders tight */
+}

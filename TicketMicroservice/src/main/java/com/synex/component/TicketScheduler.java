@@ -32,7 +32,7 @@ public class TicketScheduler {
 		this.historyRepository = historyRepository;
 	}
 
-	@Scheduled(cron = "0 0 9 * * *")
+	@Scheduled(cron = "0 0 12 * * *")
 	public void notifyLongPendingTickets() {
 		LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7);
 		List<Ticket> stalePendings = ticketRepo.findByStatusAndCreationDateBefore(Status.OPEN, sevenDaysAgo);
@@ -56,7 +56,7 @@ public class TicketScheduler {
 		}
 	}
 
-	@Scheduled(cron = "0 0 9 * * *")
+	@Scheduled(cron = "0 0 12 * * *")
 	public void autoCloseResolvedTickets() {
 		LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
 		List<Ticket> staleResolved = ticketRepo.findByStatusAndUpdationDateBefore(Status.RESOLVED, fiveDaysAgo);
